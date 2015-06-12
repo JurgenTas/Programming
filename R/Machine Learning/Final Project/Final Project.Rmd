@@ -1,0 +1,84 @@
+---
+title: "Practical Machine Learning Course - Final Project"
+author: "Jurgen Tas"
+date: "12 Jun 2015"
+output: html_document
+---
+
+## Introduction
+Devices such as Jawbone Up, Nike FuelBand, and Fitbit can measure a large amount of personal excersise data. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. The goal of this project is to predict the manner in which they did the exercise. To this end, we analyse data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. The participants were asked to perform barbell lifts correctly and incorrectly in five different ways. For more information we refer to: http://groupware.les.inf.puc-rio.br/har.
+
+## Analysis
+First, we import the data using:
+
+```{r}
+# import raw data:
+pml.training.raw = read.csv("pml-training.csv", header=TRUE, na.strings=c("NA","NaN", '') )
+pml.testing.raw = read.csv("pml-testing.csv", header=TRUE, na.strings=c("NA","NaN", " ") )
+```
+
+Inspection of the raw data reveals that there various columns containing only NA's or empty entries. Thus, we decide to remove these columns from both the data sets using: 
+
+```{r}
+# commands to clean the raw data:
+pml.training = subset(pml.training.raw , select=colMeans(is.na(pml.training.raw)) == 0) 
+pml.testing = subset(pml.testing.raw , select=colMeans(is.na(pml.testing.raw)) == 0) 
+```
+
+The first seven columns of both resulting data sets do not contain accelerometer measurements. So, we remove these columns as well.
+
+```{r}
+# remove first 7 columns:
+pml.training = pml.training[c(-1:-7)] 
+pml.testing = pml.testing[c(-1:-7)] 
+```
+
+Next, we create a partition of the pml.training data. 
+
+```{r}
+# load caret package:
+library(caret)
+# Set random seed:
+set.seed(3456)
+# create validation/train data sets:
+inTrain = createDataPartition(pml.training$classe, p = .7, list = FALSE)
+training = pml.training[inTrain,]
+validation = pml.training[-inTrain,]
+```
+
+We apply the random forest method to the training data set. This algorithm is one of the most accurate classification algorithms. The training set is randomly split into 5 folds. We train the model on 4/5 of the data, and check its accuracy on the 1/5 of the data we left out. This procedure is repeated with each split of the data. After building the model, we test the predictive power on the validation set.
+
+```{r}
+# load random forest package:
+library(randomForest)
+# Set random seed:
+set.seed(6543)
+# Use 5 folds for cross-validation:
+trControl = trainControl(method = "cv", number = 5) 
+# apply random forest model:
+modFit = train(classe ~ ., data=training, method="rf", trControl = trControl, prox=TRUE, ntree=50) 
+print(modFit)
+print(modFit$finalModel)
+# predict outcome for validation data set using the random forest model:
+pred = predict(modFit,validation )
+# print confusion matrix:
+confusionMatrix(pred, validation$classe)
+```
+The estimated out-of-sample accuracy of the model is 99.41%. Thus, the estimated out-of-sample error is (100% - 99.41%) = 0.59%. The last step is to apply the model to each of the 20 test cases in the testing data set:
+
+```{r}
+# predict outcome for test data set using model:
+outcome = predict(modFit,pml.testing[,-53])
+outcome
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+pml_write_files(outcome)
+```
+
+
+
