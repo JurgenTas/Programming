@@ -70,23 +70,23 @@ img {
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>Devices such as Jawbone Up, Nike FuelBand, and Fitbit can measure a large amount of personal excersise data. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. The goal of this project is to predict the manner in which they did the exercise. To this end, we analyse data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. The participants were asked to perform barbell lifts correctly and incorrectly in five different ways. For more information we refer to: <a href="http://groupware.les.inf.puc-rio.br/har" class="uri">http://groupware.les.inf.puc-rio.br/har</a>.</p>
+<p>Devices such as Jawbone Up, Nike FuelBand, and Fitbit can measure a large amount of personal excersise data. One thing that people regularly do is quantify how much of a particular activity they do. However, they rarely quantify how well they do it. The goal of this project is to predict the manner in which they did the exercise. To this end, we analyse data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. The participants were asked to perform barbell lifts correctly and incorrectly in five different ways. For more information we refer to: <a href="http://groupware.les.inf.puc-rio.br/har" class="uri">http://groupware.les.inf.puc-rio.br/har</a>.</p>
 </div>
 <div id="analysis" class="section level2">
 <h2>Analysis</h2>
-<p>First, we import the data using:</p>
+<p>First, we import the raw data using:</p>
 <pre class="r"><code># import raw data:
 pml.training.raw = read.csv(&quot;pml-training.csv&quot;, header=TRUE, na.strings=c(&quot;NA&quot;,&quot;NaN&quot;, '') )
 pml.testing.raw = read.csv(&quot;pml-testing.csv&quot;, header=TRUE, na.strings=c(&quot;NA&quot;,&quot;NaN&quot;, &quot; &quot;) )</code></pre>
-<p>Inspection of the raw data reveals that there various columns containing only NA’s or empty entries. Thus, we decide to remove these columns from both the data sets using:</p>
+<p>Inspection of this data reveals that there various columns containing only NA’s or empty entries. Thus, we decide to remove these columns from both the data sets using:</p>
 <pre class="r"><code># commands to clean the raw data:
 pml.training = subset(pml.training.raw , select=colMeans(is.na(pml.training.raw)) == 0) 
 pml.testing = subset(pml.testing.raw , select=colMeans(is.na(pml.testing.raw)) == 0) </code></pre>
-<p>The first seven columns of both resulting data sets do not contain accelerometer measurements. So, we remove these columns as well.</p>
+<p>The first seven columns of both resulting data sets do not contain accelerometer measurements or the classe outcome. So, we remove these columns as well.</p>
 <pre class="r"><code># remove first 7 columns:
 pml.training = pml.training[c(-1:-7)] 
 pml.testing = pml.testing[c(-1:-7)] </code></pre>
-<p>Next, we create a partition of the pml.training data.</p>
+<p>Next, we create a 30-70 partition of the pml.training data.</p>
 <pre class="r"><code># load caret package:
 library(caret)</code></pre>
 <pre><code>## Loading required package: lattice
@@ -97,7 +97,7 @@ set.seed(3456)
 inTrain = createDataPartition(pml.training$classe, p = .7, list = FALSE)
 training = pml.training[inTrain,]
 validation = pml.training[-inTrain,]</code></pre>
-<p>We apply the random forest method to the training data set. This algorithm is one of the most accurate classification algorithms. The training set is randomly split into 5 folds. We train the model on 4/5 of the data, and check its accuracy on the 1/5 of the data we left out. This procedure is repeated with each split of the data. After building the model, we test the predictive power on the validation set.</p>
+<p>We apply the random forest algorithm to the training data set. This algorithm is one of the most accurate prediction algorithms. The training set is randomly split into 5 folds. We train the model on 4/5 of the data, and check its accuracy on the 1/5 of the data we left out. This procedure is repeated with each split of the data. After building the model, we test the predictive power on the validation set.</p>
 <pre class="r"><code># load random forest package:
 library(randomForest)</code></pre>
 <pre><code>## randomForest 4.6-10
@@ -108,6 +108,7 @@ set.seed(6543)
 trControl = trainControl(method = &quot;cv&quot;, number = 5) 
 # apply random forest model:
 modFit = train(classe ~ ., data=training, method=&quot;rf&quot;, trControl = trControl, prox=TRUE, ntree=50) 
+# print model outcome:
 print(modFit)</code></pre>
 <pre><code>## Random Forest 
 ## 
@@ -145,7 +146,7 @@ print(modFit)</code></pre>
 ## C    0   15 2372    9    0 0.010016694
 ## D    0    2   23 2225    2 0.011989343
 ## E    1    4    4   10 2506 0.007524752</code></pre>
-<pre class="r"><code># predict outcome for validation data set using the random forest model:
+<pre class="r"><code># predict outcome for validation data set:
 pred = predict(modFit,validation )
 # print confusion matrix:
 confusionMatrix(pred, validation$classe)</code></pre>
@@ -180,7 +181,7 @@ confusionMatrix(pred, validation$classe)</code></pre>
 ## Detection Rate         0.2843   0.1912   0.1730   0.1621   0.1835
 ## Detection Prevalence   0.2860   0.1912   0.1757   0.1636   0.1835
 ## Balanced Accuracy      0.9985   0.9939   0.9945   0.9939   0.9991</code></pre>
-<p>The estimated out-of-sample accuracy of the model is 99.41%. Thus, the estimated out-of-sample error is (100% - 99.41%) = 0.59%. The last step is to apply the model to each of the 20 test cases in the testing data set:</p>
+<p>The estimated out-of-sample accuracy of the model is 99.41%. Thus, the estimated out-of-sample error is 100% - 99.41% = 0.59%. The last step is to apply the model to each of the 20 test cases in the testing data set:</p>
 <pre class="r"><code># predict outcome for test data set using model:
 outcome = predict(modFit,pml.testing[,-53])
 outcome</code></pre>
