@@ -1,0 +1,84 @@
+---
+title: "Linear Regression"
+author: "Jurgen Tas"
+date: "10 Jul 2015"
+output: pdf_document
+---
+
+## Executive Summary
+In this project, the Motor Trend Car Road Tests (mtcars) dataset is analyzed. The data, extracted from the 1974 Motor Trend US magazine, comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles. The goal is to explore the relationship between a set of variables and miles per gallon (MPG) (outcome). Two questions are adressed:
+
+1) Is an automatic or manual transmission better for MPG?
+2) Can we quantify the MPG difference between automatic and manual transmissions?
+
+## Data Exploration
+First, the mtcars dataset and the library we need are loaded. 
+
+```{r, message=F, warning=F}
+data(mtcars)
+library(car)
+```
+
+The structure of the mtcars dataset is listed by using:
+
+```{r, message=F, warning=F}
+str(mtcars)
+```
+
+To investigate the impact of am on mpg, a box plot is made (see Appendix). This type of plot shows the distribution of the mpg variable for both transmission types. Observe that median mpg for automatic and manual transmissions differ. The median mileage is higher for manual transmissions.
+
+Next, consider the correlations among the variables in the dataset. Mileage is most strongly (negatively) correlated with wt, cyl and disp. These variables are also strongly positevely correlated to each other. Strong correlations among predictor variables might lead to confounders in the regression.
+
+```{r, message=F, warning=F}
+round(cor(mtcars), 2)
+```
+
+## Model Selection
+Three nested linear regressions models using wt and am as predictor variables and mpg as the outcome variable are build. The (nested) models are compared using the anova() function in R. The first model only takes am as predictor variable. We compare this model with model 2, taking am and wt as predictor variables. The last model takes the interaction between am and wt into consideration.
+
+```{r, message=F, warning=F}
+mtcars$am = factor(mtcars$am,labels=c('Auto','Man'))
+mtcars$cyl = factor(mtcars$cyl)
+model1 = lm(mpg ~ am, data = mtcars)
+model2 = lm(mpg ~ am + wt, data = mtcars)
+model3 = lm(mpg ~ am + wt + am:wt, data = mtcars)
+anova(model1, model2, model3)
+```
+
+Using the third model leads to significant improvement compared to using the first two models. Thus, we decide to base our conclusions on model 1 and model 3. Residual plots are shown in the appendix of this document.
+
+## Conclusions
+```{r, message=F, warning=F}
+summary(model1)
+confint(model1)
+summary(model3)
+```
+Model 1 explains 36% of the variance, model 4 explains 83% of the variance. All parameters, for both models, are statistically significant. Based on model 1, we estimate with 95% confidence that the mpg difference between automatic and manual transmission cars is between 3.6 and 10.8. However, if we look deeper into this matter, we observe that if wt increases, the drop in mpg is steeper for manual transmission cars; i.e. see Appendix. This effect is captured by model 3. For manual transmission cars, the mpg drops 9.1 if weight increases with 1000lbs. For automatic transmission cars, the mpg drops 3.8 if weight increases with 1000lbs.
+
+## Appendix: Boxplots
+```{r, echo=FALSE}
+data(mtcars)
+boxplot(mpg ~ factor(mtcars$am, levels=c(0,1), labels=c("Auto", "Man") ), data=mtcars, xlab="Transmission",ylab="Miles per Gallon")
+```
+
+## Appendix: Regression diagnostics 
+```{r, echo=FALSE}
+par(mfrow = c(1, 3))
+plot(model1, which=1, main = "mpg ~ am")
+plot(model2, which=1, main = "mpg ~ am + wt")
+plot(model3, which=1, main = "mpg ~ am + wt + am:wt")
+```
+
+## Appendix: Interaction plot
+```{r, echo=FALSE}
+library(ggplot2)
+transmission = factor(mtcars$am, levels=c(0,1), labels=c("Auto",  "Man"))
+qplot(wt,mpg, data=mtcars, color=transmission, shape=transmission, geom=c("point", "smooth"), method="lm", formula=y~x, xlab="Car Weight", ylab="Miles Per Gallon", main="mpg ~ am + wt + am:wt")
+```
+
+
+
+
+
+
+
