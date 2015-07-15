@@ -1,7 +1,7 @@
 ---
 title: "Linear Regression"
 author: "Jurgen Tas"
-date: "10 Jul 2015"
+date: "15 Jul 2015"
 output: pdf_document
 ---
 
@@ -27,7 +27,7 @@ str(mtcars)
 
 To investigate the impact of am on mpg, a box plot is made (see Appendix). This type of plot shows the distribution of the mpg variable for both transmission types. Observe that median mpg for automatic and manual transmissions differ. The median mileage is higher for manual transmissions.
 
-Next, consider the correlations among the variables in the dataset. Mileage is most strongly (negatively) correlated with wt, cyl and disp. These variables are also strongly positevely correlated to each other. Strong correlations among predictor variables might lead to confounders in the regression.
+Next, consider the correlations among the variables in the dataset. Mileage is most strongly correlated with wt, cyl and disp. These variables are also strongly positevely correlated to each other. Strong correlations among predictor variables might lead to confounders in the regression.
 
 ```{r, message=F, warning=F}
 round(cor(mtcars), 2)
@@ -53,7 +53,10 @@ summary(model1)
 confint(model1)
 summary(model3)
 ```
-Model 1 explains 36% of the variance, model 4 explains 83% of the variance. All parameters, for both models, are statistically significant. Based on model 1, we estimate with 95% confidence that the mpg difference between automatic and manual transmission cars is between 3.6 and 10.8. However, if we look deeper into this matter, we observe that if wt increases, the drop in mpg is steeper for manual transmission cars; i.e. see Appendix. This effect is captured by model 3. For manual transmission cars, the mpg drops 9.1 if weight increases with 1000lbs. For automatic transmission cars, the mpg drops 3.8 if weight increases with 1000lbs.
+
+Model 1 explains 36% of the variance, model 4 explains 83% of the variance. The beta values, for both models, are statistically significant. Based on model 1, we estimate with 95% confidence that the mpg difference between automatic and manual transmission cars is between 3.6 and 10.8. 
+
+But, if we look deeper into this matter, we observe that if wt increases, the drop in mpg is steeper for manual transmission cars; i.e. see Appendix. This effect is captured by model 3. Intuitively this makes sense: a heavier car requires more fuel. For manual transmission cars, the mpg drops 9.1 if weight increases with 1000lbs. For automatic transmission cars, the mpg drops 3.8 if weight increases with 1000lbs.
 
 ## Appendix: Boxplots
 ```{r, echo=FALSE}
