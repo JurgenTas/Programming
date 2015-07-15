@@ -2,7 +2,7 @@
 title: "Practical Machine Learning Course - Final Project"
 author: "Jurgen Tas"
 date: "12 Jun 2015"
-output: html_document
+output: pdf_document
 ---
 
 ## Introduction
@@ -32,7 +32,6 @@ The first seven columns of both resulting data sets do not contain accelerometer
 pml.training = pml.training[c(-1:-7)] 
 pml.testing = pml.testing[c(-1:-7)] 
 ```
-
 Next, we create a 30-70 partition of the pml.training data. 
 
 ```{r}
