@@ -25,9 +25,9 @@ The structure of the mtcars dataset is listed by using:
 str(mtcars)
 ```
 
-To investigate the impact of am on mpg, a box plot is made (see Appendix). This type of plot shows the distribution of the mpg variable for both transmission types. Observe that median mpg for automatic and manual transmissions differ. The median mileage is higher for manual transmissions.
+To investigate the impact of am on mpg, a box plot is made (see Appendix). This type of plot shows the distribution of the mpg variable for both transmission types. We observe that median mpg for automatic and manual transmissions differ. The median mileage is higher for manual transmissions.
 
-Next, consider the correlations among the variables in the dataset. Mileage is most strongly correlated with wt, cyl and disp. These variables are also strongly positevely correlated to each other. Strong correlations among predictor variables might lead to confounders in the regression.
+Next, consider the correlations among the variables in the dataset. Mileage is strongly correlated (|corr| > 80%) with wt, cyl and disp. These variables are also strongly positevely correlated to each other. Strong correlations among predictor variables leads to confounders in the regression.
 
 ```{r, message=F, warning=F}
 round(cor(mtcars), 2)
