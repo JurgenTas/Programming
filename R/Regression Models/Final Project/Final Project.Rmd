@@ -45,7 +45,7 @@ model3 = lm(mpg ~ am + wt + am:wt, data = mtcars)
 anova(model1, model2, model3)
 ```
 
-Using the third model leads to significant improvement compared to using the first two models. Thus, we decide to base our conclusions on model 1 and model 3. Residual plots are shown in the appendix of this document.
+Using the third model leads to significant improvement compared to using the first two models. We decide to base our conclusions on model 1 and model 3. Residual plots are shown in the appendix of this document.
 
 ## Conclusions
 ```{r, message=F, warning=F}
