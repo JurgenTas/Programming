@@ -1,7 +1,7 @@
 ---
-title: "Linear Regression"
+title: "Statistical Analysis of Fuel Consumption"
 author: "Jurgen Tas"
-date: "15 Jul 2015"
+date: "20 Jul 2015"
 output: pdf_document
 ---
 
@@ -54,9 +54,7 @@ confint(model1)
 summary(model3)
 ```
 
-Model 1 explains 36% of the variance, model 4 explains 83% of the variance. The beta values, for both models, are statistically significant. Based on model 1, we estimate with 95% confidence that the mpg difference between automatic and manual transmission cars is between 3.6 and 10.8. 
-
-But, if we look deeper into this matter, we observe that if wt increases, the drop in mpg is steeper for manual transmission cars; i.e. see Appendix. This effect is captured by model 3. Intuitively this makes sense: a heavier car requires more fuel. For manual transmission cars, the mpg drops 9.1 if weight increases with 1000lbs. For automatic transmission cars, the mpg drops 3.8 if weight increases with 1000lbs.
+Model 1 explains 36% of the variance, model 4 explains 83% of the variance. The beta values, for both models, are statistically significant. Based on model 1, we estimate with 95% confidence that the mpg difference between automatic and manual transmission cars is between 3.6 and 10.8. But, if we look deeper into this matter, we observe that if wt increases, the drop in mpg is steeper for manual transmission cars; i.e. see Appendix. This effect is captured by model 3. Intuitively this makes sense: a heavier car requires more fuel. For manual transmission cars, the mpg drops 9.1 if weight increases with 1000lbs. For automatic transmission cars, the mpg drops 3.8 if weight increases with 1000lbs.
 
 ## Appendix: Boxplots
 ```{r, echo=FALSE}
