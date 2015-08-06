@@ -1,4 +1,4 @@
-__author__ = 'Jurgen Tas'
+__author__ = 'J Tas'
 
 from bag import _Bag
  
