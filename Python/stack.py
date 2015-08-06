@@ -1,6 +1,5 @@
 __author__ = 'J Tas'
 
-
 class Stack:
 
     def __init__(self):
