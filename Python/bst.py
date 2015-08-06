@@ -1,3 +1,5 @@
+__author__ = 'J Tas'
+
 class Node:
 
     def __init__(self, key, val):
