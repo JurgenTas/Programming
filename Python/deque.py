@@ -1,3 +1,5 @@
+__author__ = 'J Tas'
+
 '''
 A double-ended queue is a generalization of a stack and a queue that supports
 inserting and removing items from either the front or the back of the data
