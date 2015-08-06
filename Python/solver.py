@@ -1,8 +1,5 @@
 
-"""
-Implements least-squares curve fitting.
-@author: J.M.C.Tas
-"""
+__author__ = 'J Tas'
 
 from scipy import optimize
 
