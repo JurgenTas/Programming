@@ -8,9 +8,6 @@ iterator) in constant amortized time and use space proportional to the number
 of items currently in the queue.
 '''
 
-__author__="jurgentas"
-__date__ ="$Jun 27, 2014 1:24:18 PM$"
-
 import random
 
 class Randomizedqueue:
