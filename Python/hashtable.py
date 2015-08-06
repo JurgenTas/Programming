@@ -1,3 +1,5 @@
+__author__ = 'J Tas'
+
 class HashTable():
 
     def __init__(self, size):
