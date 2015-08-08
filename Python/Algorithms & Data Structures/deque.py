@@ -8,9 +8,6 @@ worst-case time and uses space proportional to the number of items currently
 in the deque
 '''
 
-__author__="jurgentas"
-__date__ ="$Jun 27, 2014 10:39:38 AM$"
-
 class Deque:
     
     def __init__(self):
