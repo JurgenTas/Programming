@@ -51,14 +51,14 @@ class Ode1:
 
 
 def g(p, q):
-    return p * math.cos(q)
+    return p * q
 
 
 def main():
     a = 0.0
-    b = 2 * math.pi
+    b = 1
     s = Ode1(a, b, 100)
-    x, y = s.euler_bwd(g, 0, 1.0e-12, 10)
+    x, y = s.euler_bwd(g, 1, 1.0e-12, 10)
     plt.plot(x, y)
     plt.show()
 
