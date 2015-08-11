@@ -15,8 +15,8 @@ def erf(z, n):
     """
     s = 0
     for i in range(0, n + 1):
-        m = 2*i + 1
-        sign = (-1.0 ) ** i
+        m = 2 * i + 1
+        sign = (-1.0) ** i
         s += sign * (z ** m) / (mt.factorial(i) * m)
     return (2.0 / mt.sqrt(mt.pi)) * s
 
@@ -25,37 +25,64 @@ def erfc(z, n):
     """ Calculates the complementary error function. """
     return 1 - erf(z, n)
 
+
 # -------------------------------------------------------------------------------
 
 
-def inv_cdf(p):
+def invcdf(p, n):
     """ Calculates the inverse of the normal cum. distr. function."""
 
     if p <= 0.0 or p >= 1.0:
         raise Exception("Invalid input argument!")
 
-    if p < 0.5:
-        return -1.0 * approx(mt.sqrt(-2.0*mt.log(p)))
+    return -1.0 * mt.sqrt(2.0) * inverfc(2.0 * p, n)
+
+
+def inverf(p, n):
+    """ Calculates inverse of error function.
+
+    See: Numerical Recipes, 3th edition (6.2).
+    """
+    return inverfc(1.0 - p, n)
+
+
+def inverfc(p, n):
+    """ Calculates inverse of complementary error function.
+
+    See: Numerical Recipes, 3th edition (6.2).
+    """
+    if p >= 2.0:
+        return -100
+    if p <= 0.0:
+        return 100
+
+    if p < 1.0:
+        pp = p
     else:
-        return approx(mt.sqrt(-2.0*mt.log(1-p)))
+        pp = 2.0 - p
 
+    t = mt.sqrt(-2.0 * mt.log(pp / 2.0))
+    x = -0.70711 * ((2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t)
+    for i in range(0, 2):
+        err = erfc(x, n) - pp
+        x += err / (1.12837916709551257 * mt.exp(-x * x) - x * err)  # Halley
 
-def approx(t):
-    """ See: Abramowitz and Stegun: Handbook of Mathematical Functions (26.2.23)."""
+    if p < 1.0:
+        return x
+    else:
+        return -x
 
-    c = [2.515517, 0.802853, 0.010328]
-    d = [1.432788, 0.189269, 0.001308]
-    return t - ((c[2]*t + c[1])*t + c[0]) / (((d[2]*t + d[1])*t + d[0])*t + 1.0)
 
 # -------------------------------------------------------------------------------
 
 
 def main():
 
-    n = 100
-    z = 3
-    print(cdf(z, n))
-    print(inv_cdf())
+    n = 6
+    xp = [0.1,0.25,0.5,0.75,0.9]
+    for x in xp:
+        print(invcdf(x, n))
+
 
 if __name__ == "__main__":
     main()
