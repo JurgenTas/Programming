@@ -4,8 +4,6 @@ from scipy import optimize
 import numpy as np
 import matplotlib.pyplot as plt
 
-l = [] # global param list
-
 class Parameter:
     
     def __init__(self, value):
@@ -37,7 +35,7 @@ def fit(func, parameters, y, x = None):
 def g(x):
     ans = 0
     for i in range(0,4):
-        ans += l[i]() * (x ** i)
+        ans += parameters[i]() * (x ** i)
     return ans
     
 def main():
@@ -49,12 +47,10 @@ def main():
     xp = np.linspace(x0, x1, n)
     yp = np.exp(xp) + np.random.normal(0, 0.1, n)
     
-    # solve: 
-    l.append(Parameter(0))
-    l.append(Parameter(0))
-    l.append(Parameter(0))
-    l.append(Parameter(0))
-    fit(g, l, yp, xp)
+    # fit data to model:
+    global parameters # global parameter list
+    parameters = [Parameter(1), Parameter(2), Parameter(3), Parameter(4)]
+    fit(g, parameters, yp, xp)
     
     # plot results:
     plt.scatter(xp, yp)
