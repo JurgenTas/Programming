@@ -36,7 +36,7 @@ def fit(func, parameters, y, x=None):
 def g(x):
     ans = 0
     for i in range(0, 4):
-        ans += parameters[i]() * (x ** i)
+        ans += param_list[i]() * (x ** i)
     return ans
 
 
@@ -49,9 +49,9 @@ def main():
     yp = np.exp(xp) * (1 + np.random.normal(0, 0.1, n))
 
     # fit data to model:
-    global parameters  # global parameter list
-    parameters = [Parameter(1), Parameter(2), Parameter(3), Parameter(4)]
-    fit(g, parameters, yp, xp)
+    global param_list  # global parameter list
+    param_list = [Parameter(1), Parameter(2), Parameter(3), Parameter(4)]
+    fit(g, param_list, yp, xp)
 
     # plot results:
     plt.scatter(xp, yp)

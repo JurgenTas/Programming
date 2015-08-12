@@ -46,7 +46,7 @@ class Ode1:
             k2 = self.h * f(x + 0.5 * k1, t + 0.5 * self.h)
             k3 = self.h * f(x + 0.5 * k2, t + 0.5 * self.h)
             k4 = self.h * f(x + k3, t + self.h)
-            x += (k1 + 2 * k2 + 2 * k3 + k4) / 6
+            x += (k1 + 2.0 * k2 + 2.0 * k3 + k4) / 6.0
         return self.tp, self.xp
 
 
@@ -56,7 +56,7 @@ def g(p, q):
 
 def main():
     a = 0.0
-    b = 2 * math.pi
+    b = 2.0 * math.pi
     s = Ode1(a, b, 100)
     x, y = s.euler_bwd(g, 1, 1.0e-12, 10)
     plt.plot(x, y)
