@@ -35,8 +35,11 @@ def fit(func, parameters, y, x = None):
     optimize.leastsq(f, p)
  
 def g(x):
-    return l[0]() + l[1]()*x + l[2]()*(x**2.0) + l[3]()*(x**3.0) 
-
+    ans = 0
+    for i in range(0,4):
+        ans += l[i]() * (x ** i)
+    return ans
+    
 def main():
     
     # create data (incl. random noise):
