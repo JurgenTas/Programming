@@ -4,7 +4,7 @@ import math as mt
 
 
 def cdf(z, n):
-    """ Calculates the normal cum. distr. function."""
+    """ Calculates the normal cum. distr. function. """
     return 0.5 * erfc(-z / mt.sqrt(2), n)
 
 
@@ -13,12 +13,12 @@ def erf(z, n):
 
     See: Abramowitz and Stegun: Handbook of Mathematical Functions (7.1.15).
     """
-    s = 0
+    ans = 0
     for i in range(0, n + 1):
         m = 2 * i + 1
         sign = (-1.0) ** i
-        s += sign * (z ** m) / (mt.factorial(i) * m)
-    return (2.0 / mt.sqrt(mt.pi)) * s
+        ans += sign * (z ** m) / (mt.factorial(i) * m)
+    return (2.0 / mt.sqrt(mt.pi)) * ans
 
 
 def erfc(z, n):
@@ -30,7 +30,7 @@ def erfc(z, n):
 
 
 def invcdf(p, n):
-    """ Calculates the inverse of the normal cum. distr. function."""
+    """ Calculates the inverse of the normal cum. distr. function. """
 
     if p <= 0.0 or p >= 1.0:
         raise Exception("Invalid input argument!")
@@ -62,15 +62,15 @@ def inverfc(p, n):
         pp = 2.0 - p
 
     t = mt.sqrt(-2.0 * mt.log(pp / 2.0))
-    x = -0.70711 * ((2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t)
+    ans = -0.70711 * ((2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t)
     for i in range(0, 2):
-        err = erfc(x, n) - pp
-        x += err / (1.12837916709551257 * mt.exp(-x * x) - x * err)  # Halley
+        err = erfc(ans, n) - pp
+        ans += err / (1.12837916709551257 * mt.exp(-ans * ans) - ans * err)  # Halley
 
     if p < 1.0:
-        return x
+        return ans
     else:
-        return -x
+        return -ans
 
 
 # -------------------------------------------------------------------------------
