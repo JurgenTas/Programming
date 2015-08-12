@@ -3,7 +3,6 @@ __author__ = 'J Tas'
 import numpy as np
 from scipy.optimize import newton
 import matplotlib.pyplot as plt
-import math
 
 
 class Ode1:
