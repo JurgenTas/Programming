@@ -34,7 +34,6 @@ def invcdf(p, n):
 
     if p <= 0.0 or p >= 1.0:
         raise Exception("Invalid input argument!")
-
     return -1.0 * mt.sqrt(2.0) * inverfc(2.0 * p, n)
 
 
@@ -55,7 +54,6 @@ def inverfc(p, n):
         return -100
     if p <= 0.0:
         return 100
-
     if p < 1.0:
         pp = p
     else:
@@ -66,7 +64,6 @@ def inverfc(p, n):
     for i in range(0, 2):
         err = erfc(ans, n) - pp
         ans += err / (1.12837916709551257 * mt.exp(-ans * ans) - ans * err)  # Halley
-
     if p < 1.0:
         return ans
     else:
