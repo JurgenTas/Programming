@@ -3,6 +3,7 @@ __author__ = 'J Tas'
 import numpy as np
 from scipy.optimize import newton
 import matplotlib.pyplot as plt
+import math
 
 
 class Ode1:
@@ -50,12 +51,12 @@ class Ode1:
 
 
 def g(p, q):
-    return p * q
+    return p * math.sin(q)
 
 
 def main():
     a = 0.0
-    b = 1
+    b = 2 * math.pi
     s = Ode1(a, b, 100)
     x, y = s.euler_bwd(g, 1, 1.0e-12, 10)
     plt.plot(x, y)
