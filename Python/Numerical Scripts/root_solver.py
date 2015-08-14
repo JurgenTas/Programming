@@ -11,11 +11,11 @@ def solve(f, x, n_steps, tol_x=1e-6, tol_f=1e-6):
     """
     Given an initial guess x[0..n-1] for a root in n dimensions, take n_steps Newton-Raphson
     steps to improve the root.
-    :param f:
-    :param x:
-    :param n_steps:
-    :param tol_x:
-    :param tof_f:
+    :param f: n-dimensional function
+    :param x: n-dimensional vector
+    :param n_steps: number of steps to take
+    :param tol_x: tolerance for x
+    :param tof_f: tolerance for function f
     :return:
     """
 
@@ -25,19 +25,14 @@ def solve(f, x, n_steps, tol_x=1e-6, tol_f=1e-6):
 
         fvec = f(x)
         fjac = jacobian(f, x)
-
         errf = 0.0
         for i in range(0, n):
             errf += abs(fvec[i])
-
         if errf <= tol_f:
             return x
-
         for i in range(0, n):
             p[i] = -fvec[i]
-
         s = np.linalg.solve(fjac, p)
-
         errx = 0.0
         for i in range(0, n):
             errx += abs(s[i])
@@ -65,16 +60,15 @@ def jacobian(func, x, eps=1.0e-8):
 
         temp = xh[j]
         h = eps * mt.fabs(temp)
-
         if h == 0.0:
             h = eps
-
         xh[j] = temp + h  # trick to reduce finite-precision error
         h = xh[j] - temp
         fh = func(xh)
         xh[j] = temp
         for i in range(0, n):
             df[i][j] = (fh[i] - f[i]) / h
+            
     return df
 
 
