@@ -77,8 +77,8 @@ def jacobian(func, x, eps=1.0e-8):
 
 def g(x):
     g1 = x[0] + 1
-    g2 = x[1] + x[0]
-    g3 = x[2] + x[1]
+    g2 = x[1] + 2 * x[0]
+    g3 = 4 * x[2] + 6 * x[1] + x[0] * x[1]
     return [g1, g2, g3]
 
 
@@ -86,6 +86,7 @@ def main():
     x = [1.0, 2.0, 3.0]
     s = solve(g, x, 100)
     print(s)
+    print(g(s))
 
 
 if __name__ == "__main__":
