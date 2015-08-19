@@ -1,65 +1,56 @@
+# coding=utf-8
 __author__ = 'J Tas'
 
 import scipy.optimize as opt
-
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-def optimize(func, x0, name, **kwargs):
+# The Rosenbrock function
+def g(x):
+    return .5 * (1 - x[0]) ** 2 + (x[1] - x[0] ** 2) ** 2
+
+
+def optimize(f, x0, n, **kwargs):
     """
-    :param f: a callable function
-    :param x0: initial value used to start the algorithm
-    :param name: algorithm type
-    :param kwargs: see http://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html
+    Minimization of scalar function of one or more variables
+    :param f: Objective function to be minimized.
+    :param x0: Initial guess.
+    :param fprime: Gradient of f.
+    :return: The optimization result represented as a OptimizeResult object
     """
-
-    if name == "fmin_bfgs":
-        print("Minimization of scalar function of one or more variables using the BFGS algorithm.")
-        return opt.fmin(func, x0, **kwargs)
-    if name == "fmin_cg":
-        print("Minimization of scalar function of one or more variables using the Conjugate Gradient algorithm.")
-        return opt.fmin_cg(func, x0, **kwargs)
-    if name == "fmin_ncg":
-        print("Minimization of scalar function of one or more variables using the Newton-CG algorithm.")
-        return opt.fmin_ncg(func, x0, **kwargs)
-    if name == "fmin_powell":
-        print("Minimization of scalar function of one or more variables using the Powell algorithm.")
-        return opt.fmin_powell(func, x0, **kwargs)
-    print("Skipping optimization")
-
-    return
+    if n == 1:  # Minimize a function using the Nelder-Mead algorithm.
+        return opt.minimize(f, x0, method="Nelder-Mead", **kwargs)
+    if n == 2:  # Minimize a function using modified Powell’s method.
+        return opt.minimize(f, x0, method="Powell", **kwargs)
+    if n == 3:  # Minimize a function using a nonlinear conjugate gradient algorithm.
+        return opt.minimize(f, x0, method="CG", **kwargs)
+    if n == 4:  # Minimize a function using the BFGS algorithm.
+        return opt.minimize(f, x0, method="BFGS", **kwargs)
+    if n == 5:  # Minimize a function using the Newton-CG method.
+        return opt.minimize(f, x0, method="BFGS", **kwargs)
+    return None
 
 
-def f(params):
-    """
-    Rosenbrock's banana function
-    :param params: x, y values
-    :return: function value
-    """
-    a = 1
-    b = 100
-    x, y = params
-    return ((a - x) ** 2) + b * ((y - x ** 2) ** 2)
-
-
-def main():
-    # plot:
-    x = np.outer(np.linspace(-1, 1, 30), np.ones(30))
+def plot():
+    x = np.outer(np.linspace(-1, 1, 50), np.ones(50))
     y = x.copy().T
-    z = f([x, y])
+    z = g([x, y])
     fig = plt.figure()
     ax = plt.axes(projection='3d')
     ax.plot_surface(x, y, z, cmap=plt.cm.jet, rstride=1, cstride=1, linewidth=0)
     fig.add_axes(ax)
     plt.show()
 
-    # optimize:
-    arr = np.array([-1, 1])
-    ans = optimize(f, arr, "fmin_bfgs", disp=True)
-    print(ans)
+
+def main():
+    plot()
+    x0 = [2, 2]
+    s = optimize(g, x0, 1)
+    print(s.message)
+    print(s.x)
 
 
 if __name__ == "__main__":
