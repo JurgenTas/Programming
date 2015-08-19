@@ -9,7 +9,7 @@ import numpy as np
 
 
 # The Rosenbrock function
-def g(params):
+def f(params):
     x, y = params
     return .5 * (1 - x) ** 2 + (y - x ** 2) ** 2
 
