@@ -19,7 +19,6 @@ def optimize(f, x0, n, **kwargs):
     Minimization of scalar function of one or more variables
     :param f: Objective function to be minimized.
     :param x0: Initial guess.
-    :param fprime: Gradient of f.
     :return: The optimization result represented as a OptimizeResult object
     """
     if n == 1:  # Minimize a function using the Nelder-Mead algorithm.
