@@ -38,7 +38,7 @@ def optimize(f, x0, n, **kwargs):
 def plot():
     x = np.outer(np.linspace(-1, 1, 50), np.ones(50))
     y = x.copy().T
-    z = g([x, y])
+    z = f([x, y])
     fig = plt.figure()
     ax = plt.axes(projection='3d')
     ax.plot_surface(x, y, z, cmap=plt.cm.jet, rstride=1, cstride=1, linewidth=0)
