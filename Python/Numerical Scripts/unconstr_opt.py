@@ -48,7 +48,7 @@ def plot():
 def main():
     plot()
     x0 = [2, 2]
-    s = optimize(g, x0, 1)
+    s = optimize(f, x0, 1)
     print(s.message)
     print(s.x)
 
