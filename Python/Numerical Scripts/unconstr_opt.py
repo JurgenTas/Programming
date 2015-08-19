@@ -30,7 +30,7 @@ def optimize(f, x0, n, **kwargs):
     if n == 4:  # Minimize a function using the BFGS algorithm.
         return opt.minimize(f, x0, method="BFGS", **kwargs)
     if n == 5:  # Minimize a function using the Newton-CG method.
-        return opt.minimize(f, x0, method="BFGS", **kwargs)
+        return opt.minimize(f, x0, method="Newton-CG", **kwargs)
     return None
 
 
