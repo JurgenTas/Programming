@@ -9,8 +9,9 @@ import numpy as np
 
 
 # The Rosenbrock function
-def g(x):
-    return .5 * (1 - x[0]) ** 2 + (x[1] - x[0] ** 2) ** 2
+def g(params):
+    x, y = params
+    return .5 * (1 - x) ** 2 + (y - x ** 2) ** 2
 
 
 def optimize(f, x0, n, **kwargs):
