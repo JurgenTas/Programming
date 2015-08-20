@@ -9,8 +9,8 @@ def cdf(z, n):
 
 
 def erf(z, n):
-    """ Calculates the error function.
-
+    """ 
+	Calculates the error function.
     See: Abramowitz and Stegun: Handbook of Mathematical Functions (7.1.15).
     """
     ans = 0
@@ -38,16 +38,16 @@ def invcdf(p, n):
 
 
 def inverf(p, n):
-    """ Calculates inverse of error function.
-
+    """ 
+	Calculates inverse of error function.
     See: Numerical Recipes, 3th edition (6.2).
     """
     return inverfc(1.0 - p, n)
 
 
 def inverfc(p, n):
-    """ Calculates inverse of complementary error function.
-
+    """ 
+	Calculates inverse of complementary error function.
     See: Numerical Recipes, 3th edition (6.2).
     """
     if p >= 2.0:
