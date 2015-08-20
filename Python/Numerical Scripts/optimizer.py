@@ -42,7 +42,7 @@ def optimize_uncnstr(f, x0, n, **kwargs):
 
 def optimize_cnstr(f, x0, **kwargs):
     """
-    Constrained minimization of scalar function of one or more variables. Uses Sequential Least Squares Programming 
+    Constrained minimization of scalar function of one or more variables. Uses Sequential Least Squares Programming
     to minimize a function of several variables with any combination of bounds, equality and inequality constraints.
     :param f: Objective function to be minimized.
     :param x0: Initial guess.
@@ -86,3 +86,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
