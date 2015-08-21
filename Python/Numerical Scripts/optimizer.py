@@ -72,25 +72,32 @@ def plot():
     plt.show()
 
 
-def main():
-    plot()
-
-    # Unconstrained optimization
+def optimize1():
+    """ Unconstrained optimization """
     x0 = [0, 2.5]
     ux = optimize_uncnstr(g, x0, 1)
     print(ux)
 
-    # Constrained optimization
-    cons = ({'type': 'eq',
-             'fun': lambda x: np.array([x[0] ** 3 - x[1]]),
+
+def optimize2():
+    """ Constrained optimization """
+    cons = ({'type': 'eq', 'fun': lambda x: np.array([x[0] ** 3 - x[1]]),
              'jac': lambda x: np.array([3.0 * (x[0] ** 2.0), -1.0])},
             {'type': 'ineq',
              'fun': lambda x: np.array([x[1] - (x[0] - 1) ** 4 - 2])})
-
     bnds = ((0.5, 1.5), (1.5, 2.5))
     x0 = [0, 2.5]
     cx = optimize_cnstr(h, x0, bounds=bnds, constraints=cons)
     print(cx)
+
+
+# =====================================================================
+
+
+def main():
+    plot()
+    optimize1()
+    optimize2()
 
 
 if __name__ == "__main__":
