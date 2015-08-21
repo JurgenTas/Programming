@@ -1,9 +1,13 @@
 __author__ = 'J Tas'
 
+import math
+
 import numpy as np
 from scipy.optimize import newton
 import matplotlib.pyplot as plt
-import math
+
+
+# =====================================================================
 
 
 class Ode1:
@@ -17,21 +21,33 @@ class Ode1:
         self.xp = []
 
     def euler_fwd(self, f, x):
+        """
+        Implements the standard Euler method.
+        See: https://en.wikipedia.org/wiki/Euler_method
+        """
         self.xp = []
         for t in self.tp:
             self.xp.append(x)
             x += self.h * f(x, t)
         return self.tp, self.xp
 
-    def euler_bwd(self, f, x, tol, max_iter):
+    def euler_bwd(self, f, x, **kwargs):
+        """
+        Implements the implicit Euler method.
+        See: https://en.wikipedia.org/wiki/Backward_Euler_method
+        """
         self.xp = []
         for t in self.tp:
             self.xp.append(x)
             func = lambda y: y - self.h * f(y, t + self.h) - x
-            x = newton(func, x, tol=tol, maxiter=max_iter)
+            x = newton(func, x, **kwargs)
         return self.tp, self.xp
 
     def rkn2(self, f, x):
+        """
+        Implements 2nd order Runge-Kutta method.
+        See: https://en.wikipedia.org/wiki/Runge-Kutta_methods
+        """
         self.xp = []
         for t in self.tp:
             self.xp.append(x)
@@ -41,6 +57,10 @@ class Ode1:
         return self.tp, self.xp
 
     def rkn4(self, f, x):
+        """
+        Implements 4th order Runge-Kutta method.
+        See: https://en.wikipedia.org/wiki/Runge-Kutta_methods
+        """
         self.xp = []
         for t in self.tp:
             self.xp.append(x)
@@ -52,6 +72,8 @@ class Ode1:
         return self.tp, self.xp
 
 
+# =====================================================================
+
 def g(p, q):
     return p * math.sin(q)
 
@@ -60,9 +82,10 @@ def main():
     a = 0.0
     b = 2.0 * math.pi
     s = Ode1(a, b, 100)
-    x, y = s.euler_bwd(g, 1, 1.0e-12, 10)
+    x, y = s.euler_bwd(g, 1, tol=1.0e-12, maxiter=10)
     plt.plot(x, y)
     plt.show()
+
 
 if __name__ == "__main__":
     main()
