@@ -1,15 +1,15 @@
 __author__ = 'J Tas'
 
-class Node:
 
+class Node:
     def __init__(self, key, val):
         self.left = None
         self.right = None
         self.key = key
         self.value = val
 
-class BinarySearchTree:
 
+class BinarySearchTree:
     def __init__(self):
         self.root = None
 
@@ -38,8 +38,8 @@ class BinarySearchTree:
         else:
             return node.value  # found key
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     tree = BinarySearchTree()
     tree.insert(Node(3, "a"))
     tree.insert(Node(7, "d"))
@@ -48,6 +48,3 @@ if __name__ == '__main__':
     tree.insert(Node(6, "f"))
     tree.insert(Node(9, "f"))
     x = tree.search(9)
-
-
-

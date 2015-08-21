@@ -2,6 +2,8 @@ __author__ = 'J Tas'
 
 import math as mt
 
+# =====================================================================
+
 
 def cdf(z, n):
     """ Calculates the normal cum. distr. function. """
@@ -10,7 +12,7 @@ def cdf(z, n):
 
 def erf(z, n):
     """ 
-	Calculates the error function.
+    Calculates the error function.
     See: Abramowitz and Stegun: Handbook of Mathematical Functions (7.1.15).
     """
     ans = 0
@@ -26,7 +28,7 @@ def erfc(z, n):
     return 1 - erf(z, n)
 
 
-# -------------------------------------------------------------------------------
+# =====================================================================
 
 
 def invcdf(p, n):
@@ -39,7 +41,7 @@ def invcdf(p, n):
 
 def inverf(p, n):
     """ 
-	Calculates inverse of error function.
+    Calculates inverse of error function.
     See: Numerical Recipes, 3th edition (6.2).
     """
     return inverfc(1.0 - p, n)
@@ -47,7 +49,7 @@ def inverf(p, n):
 
 def inverfc(p, n):
     """ 
-	Calculates inverse of complementary error function.
+    Calculates inverse of complementary error function.
     See: Numerical Recipes, 3th edition (6.2).
     """
     if p >= 2.0:
@@ -70,7 +72,7 @@ def inverfc(p, n):
         return -ans
 
 
-# -------------------------------------------------------------------------------
+# =====================================================================
 
 
 def main():

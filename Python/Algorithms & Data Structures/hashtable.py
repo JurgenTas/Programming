@@ -1,7 +1,7 @@
 __author__ = 'J Tas'
 
-class HashTable():
 
+class HashTable():
     def __init__(self, size):
         self.size = size
         self.slots = [None] * self.size
@@ -16,11 +16,11 @@ class HashTable():
     def hash_func(self, key):
         s = 0
         for pos in range(len(key)):
-            s += (pos+1)*ord(key[pos])
+            s += (pos + 1) * ord(key[pos])
         return s % self.size
 
     def rehash(self, old_hash):
-        return (old_hash+1) % self.size
+        return (old_hash + 1) % self.size
 
     def put(self, key, data):
         idx = self.hash_func(key)
@@ -58,12 +58,11 @@ class HashTable():
                     stop = True
         return data
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     ht = HashTable(5)
     ht["a"] = 5
     ht["b"] = 4
     ht["c"] = 3
     ht["d"] = 2
     ht["e"] = 1
-

@@ -7,7 +7,9 @@ import math
 
 
 class Ode1:
-    # Solve dx/dt = f(x,t)
+    """
+    Solve dx/dt = f(x,t)
+    """
 
     def __init__(self, a, b, n=10):
         self.h = (b - a) / n

@@ -58,5 +58,6 @@ def main():
     plt.plot(xp, g(xp), 'r')
     plt.show()
 
+
 if __name__ == "__main__":
     main()

@@ -1,14 +1,14 @@
 __author__ = 'J Tas'
  
  
-class _Item():
+class _Item:
  
     def __init__(self, item):
         self.item = item
         self.next = None
  
  
-class Bag():
+class Bag:
  
     def __init__(self):
         self.first = None
@@ -32,5 +32,3 @@ class Bag():
         while current:
             yield current.item
             current = current.next
- 
- 
