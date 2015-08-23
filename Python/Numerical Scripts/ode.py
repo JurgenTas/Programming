@@ -74,17 +74,21 @@ class Ode1:
 
 # =====================================================================
 
-def g(p, q):
-    return p * math.sin(q)
+def g(x, t):
+    return x * math.sin(t)
 
 
-def main():
+def ode1():
     a = 0.0
-    b = 2.0 * math.pi
+    b = 6.0 * math.pi
     s = Ode1(a, b, 100)
     x, y = s.euler_bwd(g, 1, tol=1.0e-12, maxiter=10)
     plt.plot(x, y)
     plt.show()
+
+
+def main():
+    ode1()
 
 
 if __name__ == "__main__":
