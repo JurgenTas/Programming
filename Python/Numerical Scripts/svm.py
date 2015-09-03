@@ -29,7 +29,7 @@ def plot(x, y, clf):
     """
     Plot the maximum margin separating hyperplane within
     a two-class separable dataset using a Support Vector Machines
-    classifier with linear kernel.
+    classifier.
     """
 
     # get the separating hyperplane:
@@ -58,7 +58,7 @@ def plot(x, y, clf):
 
 def main():
     xp, yp = generate()
-    clf = fit(xp, yp, kernel='linear')
+    clf = fit(xp, yp, kernel='poly')
     plot(xp, yp, clf)
 
 
