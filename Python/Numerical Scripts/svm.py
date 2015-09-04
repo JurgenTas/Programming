@@ -1,26 +1,22 @@
 __author__ = 'J Tas'
 
-
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn import svm
+import sklearn.svm
+from sklearn.datasets.samples_generator import make_blobs
 
 
 def generate():
-    n = 1000
-    xp = np.random.random((n, 2))
-    yp = []
-
-    for x in xp:
-        if x[0] / x[1] <= 1:
-            yp.append(-1)
-        else:
-            yp.append(1)
-    return xp, np.asarray(yp)
+    """
+    Generate sample data
+    """
+    np.random.seed(0)
+    centers = [[1, 1], [-1, -1]]
+    return make_blobs(n_samples=3000, centers=centers, cluster_std=0.7)
 
 
 def fit(xp, yp, **kwargs):
-    clf = svm.SVC(**kwargs)
+    clf = sklearn.svm.SVC(**kwargs)
     clf.fit(xp, yp)
     return clf
 
@@ -29,13 +25,13 @@ def plot(x, y, clf):
     """
     Plot the maximum margin separating hyperplane within
     a two-class separable dataset using a Support Vector Machines
-    classifier.
+    linear classifier.
     """
 
     # get the separating hyperplane:
     w = clf.coef_[0]
     a = -w[0] / w[1]
-    xx = np.linspace(0, 1)
+    xx = np.linspace(-1, 1)
     yy = a * xx - (clf.intercept_[0]) / w[1]
 
     # plot the parallels to the separating hyperplane
@@ -57,9 +53,9 @@ def plot(x, y, clf):
 
 
 def main():
-    xp, yp = generate()
-    clf = fit(xp, yp, kernel='poly')
-    plot(xp, yp, clf)
+    x, y = generate()
+    clf = fit(x, y, kernel='linear')
+    plot(x, y, clf)
 
 
 if __name__ == "__main__":
