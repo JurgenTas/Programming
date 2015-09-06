@@ -12,7 +12,7 @@ def generate():
     """
     np.random.seed(0)
     centers = [[1, 1], [-1, -1]]
-    return make_blobs(n_samples=3000, centers=centers, cluster_std=0.7)
+    return make_blobs(n_samples=3000, centers=centers, cluster_std=1)
 
 
 def fit(xp, yp, **kwargs):
