@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sklearn.svm
 from sklearn.datasets.samples_generator import make_blobs
+import random
 
 
 def generate():
@@ -11,11 +12,16 @@ def generate():
     Generate sample data
     """
     np.random.seed(0)
-    centers = [[1, 1], [-1, -1]]
-    return make_blobs(n_samples=3000, centers=centers, cluster_std=1)
+    c1 = [random.uniform(-2, 2), random.uniform(-2, 2)] # center 1 (random chosen)
+    c2 = [random.uniform(-2, 2), random.uniform(-2, 2)] # center 2 (random chosen)
+    centers = [c1, c2]
+    return make_blobs(n_samples=3000, centers=centers, cluster_std=0.2)
 
 
 def fit(xp, yp, **kwargs):
+    """
+    Fit using svm.SVS function
+    """
     clf = sklearn.svm.SVC(**kwargs)
     clf.fit(xp, yp)
     return clf
@@ -31,7 +37,7 @@ def plot(x, y, clf):
     # get the separating hyperplane:
     w = clf.coef_[0]
     a = -w[0] / w[1]
-    xx = np.linspace(-1, 1)
+    xx = np.linspace(-2, 2)
     yy = a * xx - (clf.intercept_[0]) / w[1]
 
     # plot the parallels to the separating hyperplane
