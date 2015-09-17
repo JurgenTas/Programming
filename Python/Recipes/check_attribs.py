@@ -4,6 +4,7 @@ __author__ = 'J Tas'
 # =====================================================================
 # Places checks or assertions on the settings of certain
 # instance attributes. See: 'Python Cookbook' (8.13).
+# Uses Python 3.
 
 # Uses a descriptor to set a value
 class Descriptor:
@@ -23,7 +24,7 @@ class Typed(Descriptor):
     def __set__(self, instance, value):
         if not isinstance(value, self.expected_type):
             raise TypeError('expected ' + str(self.expected_type))
-        super(Typed, self).__set__(instance, value)
+        super().__set__(instance, value)
 
 
 # =====================================================================
@@ -33,19 +34,19 @@ class Unsigned(Descriptor):
     def __set__(self, instance, value):
         if value < 0:
             raise ValueError('Expected >= 0')
-        super(Unsigned, self).__set__(instance, value)
+        super().__set__(instance, value)
 
 
 class MaxSized(Descriptor):
     def __init__(self, name=None, **opts):
         if 'size' not in opts:
             raise TypeError('missing size option')
-        super(MaxSized, self).__init__(name, **opts)
+        super().__init__(name, **opts)
 
     def __set__(self, instance, value):
         if len(value) >= self.size:
             raise ValueError('size must be < ' + str(self.size))
-        super(MaxSized, self).__set__(instance, value)
+        super().__set__(instance, value)
 
 
 class Integer(Typed):
