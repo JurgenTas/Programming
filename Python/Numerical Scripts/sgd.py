@@ -7,19 +7,9 @@ import numpy as np
 
 # =====================================================================
 
-def in_random_order(data):
+def minimize(func, grad_func, x, y, theta_0, alpha_0=0.01, max_it=100):
     """
-    returns the elements of data in random order
-    """
-    idx = [i for i, _ in enumerate(data)]
-    random.shuffle(idx)
-    for i in idx:
-        yield data[i]
-
-
-def stochastic_gradient_descent(func, grad_func, x, y, theta_0, alpha_0=0.01, max_it=100):
-    """
-    Minimizes an unconstrained optimization problem using
+    Minimizes an unconstrained 1D optimization problem using
     stochastic gradient descent method
     """
     data = zip(x, y)
@@ -47,12 +37,40 @@ def stochastic_gradient_descent(func, grad_func, x, y, theta_0, alpha_0=0.01, ma
     return min_theta
 
 
+def maximize(func, grad_func, x, y, theta_0, alpha_0=0.01, max_it=100):
+    """
+    Maximizes an unconstrained 1D optimization problem using
+    stochastic gradient descent method
+    """
+    return minimize(negate(func), negate_all(grad_func), x, y, theta_0, alpha_0=0.01, max_it=100)
+
+
+# =====================================================================
+
+def in_random_order(data):
+    """
+    returns the elements of data in random order
+    """
+    idx = [i for i, _ in enumerate(data)]
+    random.shuffle(idx)
+    for i in idx:
+        yield data[i]
+
+
 def vector_subtract(v, w):
     return [v_i - w_i for v_i, w_i in zip(v, w)]
 
 
 def scalar_multiply(c, v):
     return [c * v_i for v_i in v]
+
+
+def negate(f):
+    return lambda *args, **kwargs: -f(*args, **kwargs)
+
+
+def negate_all(f):
+    return lambda *args, **kwargs: [-y for y in f(*args, **kwargs)]
 
 
 # =====================================================================
@@ -74,12 +92,12 @@ def squared_error_gradient(x, y, theta):
 # =====================================================================
 
 def main():
-    random.seed(0)
+    random.seed(2)
     theta = [random.random(), random.random()]
-    x = np.arange(0, 1, 0.1)
-    y = np.arange(0, 1, 0.1)
-    alpha, beta = stochastic_gradient_descent(squared_error, squared_error_gradient, x, y, theta)
-    print alpha, beta
+    x = np.arange(0, 1, 0.01)
+    y = np.arange(0, 1, 0.01)
+    alpha, beta = minimize(squared_error, squared_error_gradient, x, y, theta, alpha_0=1e-6)
+    print(alpha, beta)
 
 
 if __name__ == "__main__":
