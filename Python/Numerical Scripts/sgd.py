@@ -2,8 +2,6 @@ __author__ = 'J Tas'
 
 import random
 
-import numpy as np
-
 
 # =====================================================================
 
@@ -12,7 +10,7 @@ def minimize(func, grad_func, x, y, theta_0, alpha_0=0.01, max_it=100):
     Minimizes an unconstrained 1D optimization problem using
     stochastic gradient descent method
     """
-    data = zip(x, y)
+    data = list(zip(x, y))
     theta, alpha = theta_0, alpha_0
     min_theta, min_value, it = None, float("inf"), 0
 
@@ -25,12 +23,11 @@ def minimize(func, grad_func, x, y, theta_0, alpha_0=0.01, max_it=100):
             min_value = value
             it = 0
             alpha = alpha_0
-
         else:
             it += 1
             alpha *= 0.9
 
-        for x_i, y_i in in_random_order(data):
+        for (x_i, y_i) in in_random_order(data):
             grad_i = grad_func(x_i, y_i, theta)
             theta = vector_subtract(theta, scalar_multiply(alpha, grad_i))
 
@@ -52,13 +49,14 @@ def in_random_order(data):
     returns the elements of data in random order
     """
     idx = [i for i, _ in enumerate(data)]
+    print(idx)
     random.shuffle(idx)
     for i in idx:
         yield data[i]
 
 
 def vector_subtract(v, w):
-    return [v_i - w_i for v_i, w_i in zip(v, w)]
+    return [v_i - w_i for v_i, w_i in list(zip(v, w))]
 
 
 def scalar_multiply(c, v):
@@ -94,9 +92,9 @@ def squared_error_gradient(x, y, theta):
 def main():
     random.seed(2)
     theta = [random.random(), random.random()]
-    x = np.arange(0, 1, 0.01)
-    y = np.arange(0, 1, 0.01)
-    alpha, beta = minimize(squared_error, squared_error_gradient, x, y, theta, alpha_0=1e-6)
+    x = [0, 1, 2, 3, 4, 5]
+    y = [0, 1, 2, 3, 4, 5]
+    alpha, beta = minimize(squared_error, squared_error_gradient, x, y, theta)
     print(alpha, beta)
 
 
