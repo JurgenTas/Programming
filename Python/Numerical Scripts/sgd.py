@@ -49,7 +49,6 @@ def in_random_order(data):
     returns the elements of data in random order
     """
     idx = [i for i, _ in enumerate(data)]
-    print(idx)
     random.shuffle(idx)
     for i in idx:
         yield data[i]
