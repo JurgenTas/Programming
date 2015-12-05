@@ -40,8 +40,8 @@ def feed_forward(network, x, func):
 # =====================================================================
 
 def main():
-	hidden_layer = [[20, 20, -30], [20, 20, -10]]
-	output_layer = [[-60, 60, -30]]
+    hidden_layer = [[20, 20, -30], [20, 20, -10]]
+    output_layer = [[-60, 60, -30]]
     network = [hidden_layer,output_layer]
     for x in [0, 1]:
         for y in [0, 1]:
