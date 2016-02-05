@@ -31,6 +31,8 @@ mkWorker = function(yName,vars,d) {
   return(worker)
 }
 
+#####################################################################
+# main
 d = iris 
 vars = c('Sepal.Length','Sepal.Width','Petal.Length')
 yName = 'Species'
