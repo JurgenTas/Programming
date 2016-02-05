@@ -5,22 +5,24 @@ Created on Sat Nov  7 09:16:54 2015
 @author: J Tas
 """
 
+import itertools
 import matplotlib.pyplot as plt
 import numpy as np
-import itertools 
 
 # =====================================================================
 # Globals
 
-alpha =  [1, 1, 1, 1, 1]                 # alpha's
+alpha = [1, 1, 1, 1, 1]  # alpha's
 delta = [-1.9, -0.6, -0.25, 0.30, 0.45]  # deltas's
 items = len(alpha)
+
 
 def generate_pattern(n):
     """
     Generate pattern combinations
     """
     return itertools.product(range(2), repeat=n)
+
 
 # =====================================================================
 
@@ -30,6 +32,7 @@ def logistic(x, alpha, delta):
     """
     arg = np.exp(alpha * (x - delta))
     return arg / (1 + arg)
+
 
 def f(x):
     """
@@ -43,7 +46,8 @@ def f(x):
         i += 1
     return res
 
-def d1f(x, h = 1.e-6):
+
+def d1f(x, h=1.e-6):
     """
     First derivative: based on central diff. approx.
     See: https://en.wikipedia.org/wiki/Finite_difference
@@ -51,7 +55,8 @@ def d1f(x, h = 1.e-6):
     arg = f(x + h) - f(x - h)
     return arg / (2 * h)
 
-def d2f(x, h = 1.e-6):
+
+def d2f(x, h=1.e-6):
     """
     Second derivative: based on central diff. approx.
     See: https://en.wikipedia.org/wiki/Finite_difference
@@ -59,20 +64,21 @@ def d2f(x, h = 1.e-6):
     arg = f(x + h) - 2.0 * f(x) + f(x - h)
     return arg / (h * h)
 
+
 # =====================================================================
 
 def plot():
-
     x0 = -3
     x1 = 3
     xp = np.linspace(x0, x1, 100)
     yp = f(xp)
     plt.plot(xp, yp, 'r')
     plt.show()
-    
+
+
 # =====================================================================
 
-def newton(func, dfunc, x0=1, tol=1E-6, n=20, debug = False):
+def newton(func, dfunc, x0=1, tol=1E-6, n=20, debug=False):
     """
     Newton's algorithm
     """
@@ -88,14 +94,15 @@ def newton(func, dfunc, x0=1, tol=1E-6, n=20, debug = False):
             i += 1
     return False
 
+
 # =====================================================================
 
 def main():
-    
-    global pattern 
-    for pattern in generate_pattern(5):   
-        res = newton(d1f, d2f, x0 = 0.0)
+    global pattern
+    for pattern in generate_pattern(5):
+        res = newton(d1f, d2f, x0=0.0)
         print("pattern vector:", pattern, "=> result:", res)
-    
+
+
 if __name__ == "__main__":
     main()

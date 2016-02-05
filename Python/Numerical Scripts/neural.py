@@ -22,6 +22,7 @@ def tanh(t):
     return math.tanh(t)
     
 # =====================================================================
+
 def neuron(func, w, x):
     return func(np.dot(w, x))
     
@@ -37,6 +38,11 @@ def feed_forward(network, x, func):
         x = y  
     return res
           
+def train(func, w, x, target):
+    """
+    """ 
+    pass          
+                    
 # =====================================================================
 
 def main():
