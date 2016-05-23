@@ -27,9 +27,8 @@ class Perceptron(object):
         self.w = [0]*len(xlist[0]) # init. weights
         for _ in range(self.n):
             cnt = 0
-            print(self.w)
             for x, y in zip(xlist, ylist):
-                delta = y - self.predict(x) # missclassification: != 0
+                delta = y - self.predict(x) # misclassification: != 0
                 if delta != 0:
                     cnt += 1
                     for i, xi in enumerate(x):
