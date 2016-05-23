@@ -34,12 +34,7 @@ def feed_forward(network, x, func):
         res.append(y)
         x = y  
     return res
-          
-def train(func, w, x, target):
-    """
-    """ 
-    pass          
-                    
+   
 # =====================================================================
 
 def main():
