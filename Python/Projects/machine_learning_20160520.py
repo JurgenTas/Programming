@@ -1,11 +1,18 @@
+# coding=utf-8
+__author__ = 'J Tas'
+
 import numpy as np
 
 
+# =====================================================================
+
+
 class Perceptron(object):
-    def __init__(self, eta=0.01, n=50):
+    def __init__(self, eta=0.1, n=10):
         self.eta = eta
         self.n = n
         self.w = []
+
 
     def fit(self, xlist, ylist):
         """
@@ -21,15 +28,23 @@ class Perceptron(object):
                     for i, xi in enumerate(x):
                         assert isinstance(xi, int)
                         self.w[i] += self.eta * error * xi
+                print(self.w)
 
 
-def step_function(z):
-    return 0 if not z >= 0.5 else 1
+# =====================================================================
+
+
+def step_function(x):
+    return 0 if x < 0.5 else 1
+ 
+    
+# =====================================================================
 
 
 def main():
-    x = [[0, 0], [1, 0], [0, 1], [1, 1]]
-    y = [0, 0, 0, 1]
+    
+    x = [[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]] 
+    y = [1, 1, 1, 0] 
     p = Perceptron()
     p.fit(x, y)
     print(p.w)
