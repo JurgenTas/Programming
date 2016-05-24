@@ -1,21 +1,31 @@
 __author__ = 'J Tas'
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import sklearn.svm
-from sklearn.datasets.samples_generator import make_blobs
-import random
 
 
-def generate():
+def load():
     """
-    Generate sample data
+    Load default data
     """
-    np.random.seed(0)
-    c1 = [random.uniform(-2, 2), random.uniform(-2, 2)] # center 1 (random chosen)
-    c2 = [random.uniform(-2, 2), random.uniform(-2, 2)] # center 2 (random chosen)
-    centers = [c1, c2]
-    return make_blobs(n_samples=3000, centers=centers, cluster_std=0.2)
+    df = pd.read_csv('https://d1pqsl2386xqi9.cloudfront.net/notebooks/Default.csv', index_col=0)
+    df.info()
+    df1 = df[(df.default == "Yes")]
+    df2 = df[(df.default == "No")].sample(n=len(df1.index))
+    df3 = df1.append(df2)
+    d = {'Yes': 1, 'No': 0}
+    x1 = df3.ix[:, 'balance'].values.tolist()
+    x1_max = max(x1)
+    x1_norm = [float(z) / x1_max for z in x1]
+    x2 = df3.ix[:, 'income'].values.tolist()
+    x2_max = max(x2)
+    x2_norm = [float(z) / x2_max for z in x2]
+    x = list(zip(x1_norm, x2_norm))
+    print(x)
+    y = df3.ix[:, 'default'].map(d).values.tolist()
+    return x, y
 
 
 def fit(xp, yp, **kwargs):
@@ -37,7 +47,7 @@ def plot(x, y, clf):
     # get the separating hyperplane:
     w = clf.coef_[0]
     a = -w[0] / w[1]
-    xx = np.linspace(-2, 2)
+    xx = np.linspace(0, 1)
     yy = a * xx - (clf.intercept_[0]) / w[1]
 
     # plot the parallels to the separating hyperplane
@@ -53,14 +63,18 @@ def plot(x, y, clf):
     plt.plot(xx, yy_down, 'k--')
     plt.plot(xx, yy_up, 'k--')
     plt.scatter(clf.support_vectors_[:, 0], clf.support_vectors_[:, 1], s=5, facecolors='none')
-    plt.scatter(x[:, 0], x[:, 1], c=y, cmap=plt.cm.Paired)
+    x1 = [row[0] for row in x]
+    x2 = [row[1] for row in x]
+    plt.scatter(x1, x2, c=y, cmap=plt.cm.Paired)
     plt.axis('tight')
+    plt.ylim(0, 1)
     plt.show()
 
 
 def main():
-    x, y = generate()
+    x, y = load()
     clf = fit(x, y, kernel='linear')
+    print(clf)
     plot(x, y, clf)
 
 
