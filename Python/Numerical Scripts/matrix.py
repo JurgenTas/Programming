@@ -4,7 +4,6 @@ import numpy as np
 
 
 class Matrix:
-
     def __init__(self, data):
         self.m = data
 
@@ -15,7 +14,7 @@ class Matrix:
         return self.m[(i, j)]
 
     def show(self):
-        print self.m
+        print(self.m)
 
     def add(self, a):
         x = self.m + a.m
@@ -55,25 +54,12 @@ class Matrix:
         return x, v
 
     def svd(self):
-        u,s,v = np.linalg.svd(self.m)
+        u, s, v = np.linalg.svd(self.m)
         return u, s, v
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     A = np.random.randint(5, size=(3, 3))
     m1 = Matrix(A)
     m2 = m1.inverse()
     m3 = m1.matrix_multiply(m2)
-
-
-
-
-
-
-
-
-
-
-
-
-
