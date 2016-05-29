@@ -3,6 +3,7 @@ __author__ = 'J Tas'
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 
 # =====================================================================
@@ -14,7 +15,7 @@ class Perceptron(object):
     for supervised learning of binary classifiers.
     """
 
-    def __init__(self, eta=0.01, n=10):
+    def __init__(self, eta=0.01, n=15):
         self.eta = eta
         self.n = n
         self.w = []
@@ -52,7 +53,7 @@ class Adaline(object):
     for supervised learning of binary classifiers.
     """
 
-    def __init__(self, eta=0.01, n=10):
+    def __init__(self, eta=0.01, n=15):
         self.eta = eta
         self.n = n
 
@@ -66,6 +67,7 @@ class Adaline(object):
         self.w = np.zeros(x.shape[1])
         for k in range(self.n):
             delta = y - self.predict(x)  # calculate delta
+            print(np.sum(delta))
             self.w += self.eta * x.T.dot(delta)
 
     def predict(self, x):
@@ -75,11 +77,19 @@ class Adaline(object):
 # =====================================================================
 
 
+def load():
+    df = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data', header=None)
+    y = df.iloc[:, 4].values
+    y = np.where(y == 'Iris-setosa', 0, 1)
+    x = df.iloc[:, [0, 1, 2, 3]].values
+    return (x - x.mean(axis=0) / x.std(axis=0)), y
+
+
 def main():
-    x = [[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]]
-    y = [1, 1, 1, 0]
-    p = Adaline()
+    x, y = load()
+    p = Perceptron()
     p.train(x, y)
+    p.plot_classification_error()
     print(p.w)
 
 
