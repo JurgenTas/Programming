@@ -1,6 +1,7 @@
 # coding=utf-8
 __author__ = 'J Tas'
 
+import matplotlib.pyplot as plt
 import pandas as pd
 import statsmodels.api as sm
 
@@ -32,9 +33,19 @@ def load():
 
 
 def fit(x, y):
+    # fit the model
     model = sm.OLS(y, x)
-    ols_results = model.fit()
-    print(ols_results.summary())
+    results = model.fit()
+    print(results.summary())
+
+    # calculate residuals
+    resid = results.resid
+    yhat = results.fittedvalues
+
+    # show residuals plot
+    fig, ax = plt.subplots()
+    ax.scatter(yhat, resid)
+    plt.show()
 
 
 def main():
