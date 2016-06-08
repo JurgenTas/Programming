@@ -51,6 +51,15 @@ def fit(x_train, y_train, x_test, y_test):
     res = model.fit()
     print(res.summary())
 
+    # Calculate predictions
+    y_train_pred = res.predict(x_train)
+    y_test_pred = res.predict(x_test)
+
+    # Residual plot
+    plt.scatter(y_train_pred, y_train_pred - y_train, c='blue', marker='o', label='Training Data')
+    plt.scatter(y_test_pred, y_test_pred - y_test, c='red', marker='s', label='Test Data')
+    plt.show()
+
 
 def main():
     x_train, y_train, x_test, y_test = load()
