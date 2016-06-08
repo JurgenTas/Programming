@@ -4,6 +4,7 @@ __author__ = 'J Tas'
 import matplotlib.pyplot as plt
 import pandas as pd
 import statsmodels.api as sm
+from sklearn.cross_validation import train_test_split
 
 
 def load():
@@ -27,30 +28,33 @@ def load():
                      sep='\s+')
     df.columns = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT',
                   'PRICE']
-    x = df.ix[:, 'CRIM':'LSTAT']
-    y = df.ix[:, 'PRICE']
-    return x, y
+    train, test = train_test_split(df, test_size=0.2, random_state=1)
+
+    x_train = train.ix[:, 'CRIM':'LSTAT']
+    y_train = train.ix[:, 'PRICE']
+    x_test = test.ix[:, 'CRIM':'LSTAT']
+    y_test = test.ix[:, 'PRICE']
+    return x_train, y_train, x_test, y_test
 
 
-def fit(x, y):
-    # fit the model
-    model = sm.OLS(y, x)
-    results = model.fit()
-    print(results.summary())
-
-    # calculate residuals
-    resid = results.resid
-    yhat = results.fittedvalues
-
-    # show residuals plot
-    fig, ax = plt.subplots()
-    ax.scatter(yhat, resid)
-    plt.show()
+def fit(x_train, y_train, x_test, y_test):
+    """
+    Fit the model
+    :param x_train: x-training data (dataframe)
+    :param y_train: y-training data (dataframe)
+    :param x_test:  x-test data (dataframe)
+    :param y_test:  y-test data (dataframe)
+    :return:
+    """
+    # Fit and summarize OLS model
+    model = sm.OLS(y_train, x_train)
+    res = model.fit()
+    print(res.summary())
 
 
 def main():
-    x, y = load()
-    fit(x, y)
+    x_train, y_train, x_test, y_test = load()
+    fit(x_train, y_train, x_test, y_test)
 
 
 if __name__ == "__main__":
