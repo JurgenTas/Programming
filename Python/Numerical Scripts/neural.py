@@ -4,7 +4,7 @@ __author__ = 'J Tas'
 import math
 
 import numpy as np
-import pandas as pd
+from sklearn.datasets import load_iris
 
 
 class NeuralNetwork:
@@ -13,15 +13,13 @@ class NeuralNetwork:
         :param input_size: each input is a vector of length 'input_size'
         :param num_hidden: we have 'num_hidden' neurons in the hidden layer
         :param output_size: we need 'output_size' outputs for each input
-        :return:
+        Each hidden neuron has one weight per input, plus a bias weight
+        Each output neuron has one weight per hidden neuron, plus a bias weight
         """
         self.input_size = input_size
         self.num_hidden = num_hidden
         self.output_size = output_size
-        # each hidden neuron has one weight per input, plus a bias weight
         self.hidden_layer = [[0 for _ in range(input_size + 1)] for _ in range(num_hidden)]
-
-        # each output neuron has one weight per hidden neuron, plus a bias weight
         self.output_layer = [[0 for _ in range(num_hidden + 1)] for _ in range(output_size)]
         self.layers = [self.hidden_layer, self.output_layer]
 
@@ -40,9 +38,6 @@ class MultilayerPerceptron:
 
     def _logistic(self, x):
         return 1.0 / (1 + math.exp(-x))
-
-    def _logistic_deriv(self, x):
-        return self._logistic(x) * (1 - self._logistic(x))
 
     def _neuron_output(self, w, x):
         return self._logistic(np.dot(w, x))
@@ -88,12 +83,11 @@ class MultilayerPerceptron:
 
 
 def load():
-    df = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data', header=None)
-    y = df.iloc[:, 4].values
-    y = np.where(y == 'Iris-setosa', 0, 1)
-    ybin = [tobin(_, 1) for _ in y]
-    x = df.iloc[:, [0, 1, 2, 3]].values
-    return (x - x.mean(axis=0) / x.std(axis=0)), ybin
+    iris = load_iris()
+    x = iris.data
+    y = iris.target
+    y = [tobin(_, 2) for _ in y]
+    return x, y
 
 
 def tobin(x, s):
@@ -106,11 +100,11 @@ def tobin(x, s):
 def main():
     x_arr, y_arr = load()
     input_size = 4
-    num_hidden = 5
-    output_size = 1
+    num_hidden = 10
+    output_size = 2
     network = NeuralNetwork(input_size, num_hidden, output_size)
     mlp = MultilayerPerceptron(network)
-    mlp.train(10, x_arr, y_arr)
+    mlp.train(100, x_arr, y_arr)
 
 
 if __name__ == "__main__":
