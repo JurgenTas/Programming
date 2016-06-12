@@ -2,38 +2,45 @@
 __author__ = 'J Tas'
 
 import math
+import random
 
 import numpy as np
+from sklearn import preprocessing
 from sklearn.datasets import load_iris
 
 
 class NeuralNetwork:
-    def __init__(self, input_size, num_hidden, output_size):
+    def __init__(self, input_size, hidden_size, output_size):
         """
         :param input_size: each input is a vector of length 'input_size'
-        :param num_hidden: we have 'num_hidden' neurons in the hidden layer
+        :param hidden_size: the number of neurons in the hidden layer
         :param output_size: we need 'output_size' outputs for each input
         Each hidden neuron has one weight per input, plus a bias weight
         Each output neuron has one weight per hidden neuron, plus a bias weight
         """
         self.input_size = input_size
-        self.num_hidden = num_hidden
+        self.hidden_size = hidden_size
         self.output_size = output_size
-        self.hidden_layer = [[0 for _ in range(input_size + 1)] for _ in range(num_hidden)]
-        self.output_layer = [[0 for _ in range(num_hidden + 1)] for _ in range(output_size)]
+        self.hidden_layer = [[random.random() for _ in range(input_size + 1)] for _ in range(hidden_size)]
+        self.output_layer = [[random.random() for _ in range(hidden_size + 1)] for _ in range(output_size)]
         self.layers = [self.hidden_layer, self.output_layer]
+
+
+# ======================================================================================================================
 
 
 class MultilayerPerceptron:
     def __init__(self, network):
         self.network = network
+        self.error = []
 
     def train(self, n, x_arr, y_arr):
+        self.error = []
         for _ in range(n):
             for x, y in zip(x_arr, y_arr):
                 self._backpropagate(x, y)
 
-    def predict(self, x):
+    def predict(self, x, round=True):
         return self._feed_forward(x)
 
     def _logistic(self, x):
@@ -57,10 +64,10 @@ class MultilayerPerceptron:
             x = output  # the input to the next layer is the output of this one
         return outputs
 
-    def _backpropagate(self, x, y):
+    def _backpropagate(self, x_arr, y_arr):
 
-        hidden_outputs, outputs = self._feed_forward(x)
-        output_deltas = [output * (1 - output) * (output - y[i]) for i, output in enumerate(outputs)]
+        hidden_outputs, outputs = self._feed_forward(x_arr)
+        output_deltas = [output * (1 - output) * (output - y_arr[i]) for i, output in enumerate(outputs)]
 
         # adjust weights for output layer (network[-1])
         for i, output_neuron in enumerate(self.network.layers[-1]):
@@ -70,41 +77,57 @@ class MultilayerPerceptron:
         # back-propagate errors to hidden layer
         hidden_deltas = []
         for i, hidden_output in enumerate(hidden_outputs):
-            hidden_deltas.append(hidden_output * (1 - hidden_output) * np.dot(output_deltas,
-                                                                              [n[i] for n in self.network.layers[-1]]))
+            hidden_deltas.append(
+                hidden_output * (1 - hidden_output) * np.dot(output_deltas, [n[i] for n in self.network.layers[-1]]))
 
         # adjust weights for hidden layer (network[0])
         for i, hidden_neuron in enumerate(self.network.layers[0]):
-            for j, x in enumerate(x + [1]):
+            for j, x in enumerate(x_arr + [1]):
                 hidden_neuron[j] -= hidden_deltas[i] * x
 
 
-# =====================================================================
+# ======================================================================================================================
 
 
 def load():
     iris = load_iris()
-    x = iris.data
-    y = iris.target
-    y = [tobin(_, 2) for _ in y]
-    return x, y
+    n_samples, n_features = iris.data.shape
+    indices = np.arange(n_samples)
+    np.random.shuffle(indices)
+    X = iris.data[indices]
+    y = iris.target[indices]
+    split = (n_samples * 2) / 3
+    X_train, X_test = X[:split], X[split:]
+    y_train, y_test = y[:split], y[split:]
+    X_train = preprocessing.normalize(X_train)
+    X_test = preprocessing.normalize(X_test)
+
+    z_train = []
+    for y in y_train:
+        if y == 0: z_train.append([1, 0, 0])
+        if y == 1: z_train.append([0, 1, 0])
+        if y == 2: z_train.append([0, 0, 1])
+
+    z_test = []
+    for y in y_test:
+        if y == 0: z_test.append([1, 0, 0])
+        if y == 1: z_test.append([0, 1, 0])
+        if y == 2: z_test.append([0, 0, 1])
+
+    return X_train, z_train, X_test, z_test
 
 
-def tobin(x, s):
-    return [(x >> k) & 1 for k in range(0, s)]
-
-
-# =====================================================================
+# ======================================================================================================================
 
 
 def main():
-    x_arr, y_arr = load()
-    input_size = 4
-    num_hidden = 10
-    output_size = 2
-    network = NeuralNetwork(input_size, num_hidden, output_size)
+    x_train_arr, y_train_arr, x_test_arr, y_test_arr = load()
+    network = NeuralNetwork(4, 4, 3)
     mlp = MultilayerPerceptron(network)
-    mlp.train(100, x_arr, y_arr)
+    mlp.train(10000, x_train_arr, y_train_arr)
+
+    for x, y in zip(x_test_arr, y_test_arr):
+        print("Input vector: ", x, "|| Target value: ", y, "|| Predicted value: ", mlp.predict(x)[-1])
 
 
 if __name__ == "__main__":
