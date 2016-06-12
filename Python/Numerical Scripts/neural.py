@@ -96,7 +96,7 @@ def load():
     np.random.shuffle(indices)
     X = iris.data[indices]
     y = iris.target[indices]
-    split = (n_samples * 2) / 3
+    split = (n_samples * 4) / 5
     X_train, X_test = X[:split], X[split:]
     y_train, y_test = y[:split], y[split:]
     X_train = preprocessing.normalize(X_train)
@@ -122,7 +122,7 @@ def load():
 
 def main():
     x_train_arr, y_train_arr, x_test_arr, y_test_arr = load()
-    network = NeuralNetwork(4, 4, 3)
+    network = NeuralNetwork(4, 5, 3)
     mlp = MultilayerPerceptron(network)
     mlp.train(10000, x_train_arr, y_train_arr)
 
