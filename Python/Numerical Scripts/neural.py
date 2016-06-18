@@ -70,26 +70,26 @@ class NeuralNetwork:
     def _backpropagate(self, X, Y):
 
         hidden_outputs, outputs = self._feed_forward(X)
-        output_deltas = [out * (1 - out) * (out - Y[i]) for i, out in enumerate(outputs)]
+        output_deltas = [out * (1 - out) * (out - Y[idx]) for idx, out in enumerate(outputs)]
 
         diff = np.asarray(Y) - np.asarray(outputs)
         err = np.linalg.norm(diff)
 
         # adjust weights for output layer (network[-1])
-        for i, output_neuron in enumerate(self.network.layers[-1]):
-            for j, hidden_output in enumerate(hidden_outputs + [1]):
-                output_neuron[j] -= output_deltas[i] * hidden_output
+        for idx1, output_neuron in enumerate(self.network.layers[-1]):
+            for idx2, hidden_output in enumerate(hidden_outputs + [1]):
+                output_neuron[idx2] -= output_deltas[idx1] * hidden_output
 
         # back-propagate errors to hidden layer
         hidden_deltas = []
-        for i, hidden_output in enumerate(hidden_outputs):
+        for idx1, hidden_output in enumerate(hidden_outputs):
             hidden_deltas.append(
-                hidden_output * (1 - hidden_output) * np.dot(output_deltas, [n[i] for n in self.network.layers[-1]]))
+                hidden_output * (1 - hidden_output) * np.dot(output_deltas, [n[idx1] for n in self.network.layers[-1]]))
 
         # adjust weights for hidden layer (network[0])
-        for i, hidden_neuron in enumerate(self.network.layers[0]):
-            for j, x in enumerate(X + [1]):
-                hidden_neuron[j] -= hidden_deltas[i] * x
+        for idx1, hidden_neuron in enumerate(self.network.layers[0]):
+            for idx2, x in enumerate(X + [1]):
+                hidden_neuron[idx2] -= hidden_deltas[idx1] * x
 
         return err
 
