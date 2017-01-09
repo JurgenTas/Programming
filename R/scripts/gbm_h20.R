@@ -37,7 +37,7 @@ predictors <- setdiff(names(df.hex), c(response))
 #build model:
 
 splits <- h2o.splitFrame(
-  data = df, 
+  data = df.hex, 
   ratios = c(0.6,0.2),   ## only need to specify 2 fractions, the 3rd is implied
   destination_frames = c("train.hex", "valid.hex", "test.hex"), seed = 1234
 )
