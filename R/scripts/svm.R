@@ -1,16 +1,17 @@
 ############################################################################################
 ############################################################################################
+#libraries:
 
 rm(list = ls())
 library(mlbench)
 library(caret)
 library(kernlab)
 library(pROC)
-data("BreastCancer")
 
 ############################################################################################
 #data handling:
 
+data("BreastCancer")
 df <- BreastCancer[, 2:11]
 df <- na.omit(df)
 df[, 1:9] <- sapply(df[, 1:9], as.numeric)
