@@ -10,7 +10,7 @@ library(devtools)
 ############################################################################################
 #connect to h20 cluster:
 
-h2o.init(nthreads = -1, max_mem_size = "2G")
+h2o.init(nthreads = -1)
 h2o.removeAll() ## clean slate - just in case the cluster was already running
 
 ############################################################################################
