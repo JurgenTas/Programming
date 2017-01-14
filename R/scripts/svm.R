@@ -70,6 +70,9 @@ svm.tune <-
 summary(svm)
 summary(svm.tune)
 
+plot(svm)
+plot(svm.tune)
+
 pred.svm <- predict(svm, newdata = testing[, 1:9])
 pred.svm.tune <- predict(svm.tune, newdata = testing[, 1:9])
 
@@ -78,7 +81,6 @@ confusionMatrix(pred.svm.tune, testing$Class)
 
 resamps <- resamples(list(SVM = svm, SVM.TUNE = svm.tune))
 summary(resamps)
-trellis.par.set(theme1)
 bwplot(resamps, layout = c(3, 1))
 
 ############################################################################################
