@@ -53,7 +53,7 @@ ctrl <-
   )
 
 metric <- "Kappa"
-grid <- expand.grid(.decay = c(0.5, 0.75, 1), .size = c(1:15))
+grid <- expand.grid(.decay = c(0.5, 0.1), .size = c(5:15))
 
 model <-
   train(
@@ -89,11 +89,11 @@ confusionMatrix(pred, y.test)
 
 pred.probs <- predict(model, x.test, type = "prob")
 x <- as.numeric((y.test == "pos") * 1)
-obj.roc <- roc(x,  y.test)
+obj.roc <- roc(x,  pred.probs$pos)
 plot.roc(
   obj.roc,
-  type = "l",
-  print.thres = c(0.5, 0.6, 0.7),
+  type = "s",
+  print.thres = c(0.25, 0.5, 0.75),
   grid = TRUE,
   print.auc = TRUE
 )
