@@ -16,17 +16,17 @@ h2o.removeAll() ## clean slate - just in case the cluster was already running
 ############################################################################################
 #data handling:
 
-data("BreastCancer")
-df <- BreastCancer[, 2:11]
+data("PimaIndiansDiabetes")
+df <- PimaIndiansDiabetes[, 1:9]
 df <- na.omit(df)
-df[, 1:9] <- sapply(df[, 1:9], as.numeric)
+df[, 1:8] <- sapply(df[, 1:8], as.numeric)
 head(df)
 summary(df)
-table(df$Class)
+table(df$diabetes)
 df.hex <- as.h2o(df)
 
 ## pick a response for the supervised problem
-response <- "Class"
+response <- "diabetes"
 
 ## the response variable is an integer, we will turn it into a categorical/factor 
 # for binary classification
