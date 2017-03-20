@@ -33,8 +33,7 @@ h2o.removeAll() # clean slate - just in case the cluster was already running
 ################################################################################
 # The database consists of the multi-spectral values of pixels in 3x3
 # neighbourhoods in a satellite image, and the classification associated with
-# the central pixel in each neighbourhood. The aim is to predict this 
-# classification, given the multi-spectral values.
+# the central pixel in each neighbourhood. 
 
 data(Satellite)
 df <- Satellite[, 1:37]
@@ -50,10 +49,10 @@ df.hex <- as.h2o(df)
 t2 <- Sys.time()
 t2 - t1
 
-## pick a response variable
+# pick a response variable
 response <- "classes"
 
-## use all other columns (except for the response variable) as predictors
+# use all other columns (except for the response variable) as predictors
 predictors <- setdiff(names(df.hex), c(response))
 summary(df.hex)
 
@@ -124,7 +123,7 @@ dt.centers = as.data.table(km.model.single@model$centers)
 #           file = "result.csv",
 #           append = TRUE,
 #           sep = ",")
-# 
+#
 # # write output:
 # write.csv(dt.centers,
 #           file = "result_centers.csv",
@@ -135,7 +134,7 @@ dt.centers = as.data.table(km.model.single@model$centers)
 ################################################################################
 # visualization (3D PCA plot):
 
-data <- as.matrix(scale(dt.result[,-c("classes", "predict")]))
+data <- as.matrix(scale(dt.result[, -c("classes", "predict")]))
 pca <- princomp(data, cor = T)
 print(pca)
 summary(pca)
@@ -149,15 +148,15 @@ p <- plot_ly(
   z = ~ Comp.3,
   color = ~ V4,
   mode = "markers",
-  marker = list(size = 3.5, opacity = 0.7),
+  marker = list(size = 3, opacity = 0.75),
   showlegend = TRUE,
   colors = c(
-    "#874bc6",
-    "#b44f40",
-    "#b34d8a",
-    "#6f7fb0",
-    "#609c57",
-    "#b79046"
+    "#8749c4",
+    "#b94d83",
+    "#7278ae",
+    "#ba6540",
+    "#5d8a62",
+    "#88b144"
   )
   # see: http://tools.medialab.sciences-po.fr/iwanthue/
 ) %>%

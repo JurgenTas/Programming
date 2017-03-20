@@ -27,25 +27,19 @@ h2o.removeAll() # clean slate - just in case the cluster was already running
 
 ################################################################################
 ################################################################################
-# Wisconsin Breast Cancer Database
-# The objective is to identify each of a number of benign or malignant classes.
+# Predict the house price in Boston from house details
 
-data("BreastCancer")
-df <- BreastCancer[, 2:11]
-df <- na.omit(df)
-df[, 1:9] <- sapply(df[, 1:9], as.numeric)
+data("BostonHousing")
+df <- BostonHousing
 head(df)
 summary(df)
-table(df$Class)
+
 df.hex <- as.h2o(df)
 
 # pick a response for the supervised problem
-response <- "Class"
+response <- "medv"
 
-# IMPORTANT: encode the (binary) repsonse as a factor
-df.hex[[response]] <- as.factor(df.hex[[response]])
-
-# use all other columns (except for the name) as predictors
+# use all other columns (except for the response) as predictors
 predictors <- setdiff(names(df.hex), c(response))
 
 # data splits:
@@ -62,36 +56,38 @@ test  <- splits[[3]]
 
 ################################################################################
 ################################################################################
-# build model
+# build model:
 
-# number of trees to grow
-ntrees <- c(250, 500, 100)
+grid <-
+  h2o.grid(
+    "glm",
+    grid_id = "grid",
+    hyper_params = list(alpha = list(
+      list(0), list(.25), list(.5), list(.75), list(1)
+    )),
+    y = response,
+    x = predictors,
+    training_frame = h2o.rbind(train, valid),
+    family = "gaussian",
+    nfolds = 5,
+    seed = 1234
+  )
 
-# number of variables randomly sampled as candidates
-# at each split
-mtries <- c(2, 3, 4)
+################################################################################
+################################################################################
+# analyze results:
 
-rf_grid <- h2o.grid(
-  "randomForest",
-  grid_id = "rf_grid",
-  x = predictors,
-  y = response,
-  training_frame = h2o.rbind(train, valid),
-  nfolds = 4,
-  seed = 1234,
-  hyper_params = list(ntrees = ntrees, mtries = mtries)
-)
+# sort by R2:
+sorted_grid <- h2o.getGrid(grid_id = "grid", sort_by = "r2")
+print(sorted_grid)
 
-# get the grid results, sorted by AUC
-rf_perf <- h2o.getGrid(grid_id = "rf_grid",
-                       sort_by = "auc",
-                       decreasing = TRUE)
-
-# get the best performing model and evaluate on test set:
-best_model <- h2o.getModel(rf_perf@model_ids[[1]])
+# get best model:
+best_model <- h2o.getModel(sorted_grid@model_ids[[1]])
 summary(best_model)
-perf <- h2o.performance(model = best_model, newdata = test)
-h2o.confusionMatrix(perf)
+
+# out-of-sample:
+perf <- h2o.performance(best_model, test)
+print(perf)
 
 ################################################################################
 ################################################################################
@@ -102,11 +98,3 @@ h2o.shutdown(prompt = FALSE)
 
 ################################################################################
 ################################################################################
-
-
-
-
-
-
-
-
