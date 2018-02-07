@@ -54,7 +54,7 @@ def ode3():
     b = 50
     s = Ode3(a, b, 5000)
     s.rkn4(f, [1, 0, 0])
-    plt.plot(s.xp, s.yp)
+    plt.plot(s.zp, s.xp)
     plt.show()
 
 
