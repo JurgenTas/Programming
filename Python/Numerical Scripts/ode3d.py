@@ -29,11 +29,14 @@ class Ode3:
             self.xp.append(r[0])
             self.yp.append(r[1])
             self.zp.append(r[2])
-            k1 = self.h * f(r, t)
-            k2 = self.h * f(r + 0.5 * k1, t + 0.5 * self.h)
-            k3 = self.h * f(r + 0.5 * k2, t + 0.5 * self.h)
-            k4 = self.h * f(r + k3, t + self.h)
-            r += (k1 + 2.0 * k2 + 2.0 * k3 + k4) / 6.0
+            r += self._rkn4_step(r, t, f)
+
+    def _rkn4_step(self, r, t, f):
+        k1 = self.h * f(r, t)
+        k2 = self.h * f(r + 0.5 * k1, t + 0.5 * self.h)
+        k3 = self.h * f(r + 0.5 * k2, t + 0.5 * self.h)
+        k4 = self.h * f(r + k3, t + self.h)
+        return (k1 + 2.0 * k2 + 2.0 * k3 + k4) / 6.0
 
 
 def f(r, t):
