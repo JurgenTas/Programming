@@ -1,11 +1,12 @@
 """
-Find a solution of the Poisson equation. Set-up: two (square) charges are 
+Find a solution of the Poisson equation. Set-up: four (square) charges are 
 placed in a two-dimensional box. The potential is zero on the walls and
 the charges have opposite equally sized densities.
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.cm as cm
 
 # Globals:
 M = 100  # Number of grid points per side
@@ -26,13 +27,17 @@ def init(n):
 
 def f(i, j):
     """
-    Helper function to model the (square) charges.
+    Helper function to model the four (square) charges.
     """
     x, y = float(i * CONST1), float(j * CONST1)
-    if 0.6 < x < 0.8 and 0.6 < y < 0.8:
+    if 0.2 < x < 0.4 and 0.2 < y < 0.4:
         return 1
-    elif 0.2 < x < 0.4 and 0.2 < y < 0.4:
+    elif 0.2 < x < 0.4 and 0.6 < y < 0.8:
         return -1
+    elif 0.6 < x < 0.8 and 0.2 < y < 0.4:
+        return -1
+    elif 0.6 < x < 0.8 and 0.6 < y < 0.8:
+        return 1
     else:
         return 0
 
@@ -60,9 +65,10 @@ def solve(x):
 
 def main():
     phi0 = init(M)
-    result, errs = solve(phi0)
-    plt.imshow(result, interpolation='bilinear', origin='lower', extent=[0, 1, 0, 1], vmax=abs(result).max(),
-               vmin=-abs(result).max())
+    phi, errs = solve(phi0)
+    plt.imshow(phi, interpolation='bilinear', cmap=cm.RdYlGn,
+               origin='lower', extent=[0, 1, 0, 1], vmax=abs(phi).max(),
+               vmin=-abs(phi).max())
     plt.show()
 
 
