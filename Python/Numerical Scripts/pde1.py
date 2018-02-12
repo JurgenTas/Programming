@@ -1,45 +1,19 @@
 """
-Find a solution of the Poisson equation. Set-up: four (square) charges are 
+Find a solution of the Poisson equation (elliptic PDE). Set-up: two (plate-shaped) charges are 
 placed in a two-dimensional box. The potential is zero on the walls and
-the charges have opposite equally sized densities.
+the charges have opposite sized densities.
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
-import matplotlib.cm as cm
 
 # Globals:
 M = 100  # Number of grid points per side
-OMEGA = 0.5  # Parameters to determine over-relaxation
+OMEGA = 0.9  # Parameters to determine over-relaxation
 ITER = 5000  # Maximum number of iterations
-CONST1 = 0.01  # Step size (1 cm)
-CONST2 = 8.854187817e-12  # Vacuum permittivity
+CONST1 = 0.01  # Step size (m)
+CONST2 = 8.854187817e-12  # Vacuum permittivity (F/m)
 TOL = 1e-6  # Target accuracy
-
-
-def init(n):
-    """
-    Init. phi to zeros.
-    """
-    phi = np.zeros([n + 1, n + 1], float)
-    return phi
-
-
-def f(i, j):
-    """
-    Helper function to model the four (square) charges.
-    """
-    x, y = float(i * CONST1), float(j * CONST1)
-    if 0.2 < x < 0.4 and 0.2 < y < 0.4:
-        return 1
-    elif 0.2 < x < 0.4 and 0.6 < y < 0.8:
-        return -1
-    elif 0.6 < x < 0.8 and 0.2 < y < 0.4:
-        return -1
-    elif 0.6 < x < 0.8 and 0.6 < y < 0.8:
-        return 1
-    else:
-        return 0
 
 
 def solve(x):
@@ -57,19 +31,34 @@ def solve(x):
                 x[i, j] += c2 * diff
                 err = max(err, abs(diff))
         errs.append(err)
-        if err < TOL:
+        if errs[-1] < TOL:
             break
     print("Final error: {} ".format(errs[-1]))
     return x, errs
 
 
-def main():
-    phi0 = init(M)
-    phi, errs = solve(phi0)
-    plt.imshow(phi, interpolation='bilinear', cmap=cm.RdYlGn,
-               origin='lower', extent=[0, 1, 0, 1], vmax=abs(phi).max(),
-               vmin=-abs(phi).max())
+def f(i, j):
+    """
+    Helper function to model the four (square) charges.
+    """
+    x, y = float(i * CONST1), float(j * CONST1)
+    if 0.2 < x < 0.8 and 0.25 < y < 0.30:
+        return 1
+    elif 0.2 < x < 0.8 and 0.70 < y < 0.75:
+        return -1
+    else:
+        return 0
+
+
+def plot(x):
+    plt.imshow(x, interpolation='bilinear', origin='lower', extent=[0, 1, 0, 1], vmax=abs(x).max(), vmin=-abs(x).max())
     plt.show()
+
+
+def main():
+    phi0 = np.zeros([M + 1, M + 1], float)
+    phi, errs = solve(phi0)
+    plot(phi)
 
 
 if __name__ == "__main__":
