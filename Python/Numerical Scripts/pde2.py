@@ -6,18 +6,17 @@ one-unit-long interval.
 """
 
 import math as mt
-import copy
 
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.sparse import diags
 
 # Globals:
-M = 100 # Number of spatial slices
-N = 100  # Number of time steps
-D = 1  # thermal diffusivity
-T = 10.0  # number of seconds (s)
-L = float(1)  # size of grid
+M = 1000  # Number of spatial slices
+N = 10  # Number of time steps
+D = 1.0  # thermal diffusivity
+T = 1.0  # number of seconds (s)
+L = 1.0  # size of grid
 
 
 def solve(dx, dt):
@@ -56,10 +55,14 @@ def main():
     f1 = result[0]
     f2 = result[1]
     f3 = result[2]
+    f4 = result[3]
+    f5 = result[4]
 
-    plt.plot(x, f1, 'r')
-    plt.plot(x, f2, 'b')
-    plt.plot(x, f3, 'g')
+    plt.plot(x, f1, '0.1')
+    plt.plot(x, f2, '0.3')
+    plt.plot(x, f3, '0.5')
+    plt.plot(x, f4, '0.7')
+    plt.plot(x, f5, '0.9')
     plt.show()
 
 

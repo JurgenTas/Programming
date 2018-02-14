@@ -1,5 +1,5 @@
 """
-Find a solution of the Poisson equation (elliptic PDE). Set-up: two (plate-shaped) charges are 
+Solves the Poisson equation (elliptic PDE). Set-up: two (rectangular-shaped) charges are 
 placed in a two-dimensional box. The potential is zero on the walls and
 the charges have opposite sized densities.
 """
@@ -10,7 +10,7 @@ import numpy as np
 # Globals:
 M = 100  # Number of grid points per side
 OMEGA = 0.9  # Parameters to determine over-relaxation
-ITER = 5000  # Maximum number of iterations
+ITER = 7500  # Maximum number of iterations
 CONST1 = 0.01  # Step size (m)
 CONST2 = 8.854187817e-12  # Vacuum permittivity (F/m)
 TOL = 1e-6  # Target accuracy
@@ -42,16 +42,17 @@ def f(i, j):
     Helper function to model the four (square) charges.
     """
     x, y = float(i * CONST1), float(j * CONST1)
-    if 0.2 < x < 0.8 and 0.25 < y < 0.30:
+    if 0.2 < x < 0.8 and 0.2 < y < 0.4:
         return 1
-    elif 0.2 < x < 0.8 and 0.70 < y < 0.75:
+    elif 0.2 < x < 0.8 and 0.6 < y < 0.8:
         return -1
     else:
         return 0
 
 
 def plot(x):
-    plt.imshow(x, interpolation='bilinear', origin='lower', extent=[0, 1, 0, 1], vmax=abs(x).max(), vmin=-abs(x).max())
+    plt.imshow(x, interpolation='bilinear', cmap='hot', origin='lower', extent=[0, 1, 0, 1], vmax=abs(x).max(),
+               vmin=-abs(x).max())
     plt.show()
 
 
