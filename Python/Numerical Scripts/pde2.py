@@ -1,3 +1,6 @@
+"""
+Solves the one-dimensional heat equation (parabolic PDE) using the Crank-Nicholson scheme. This scheme is based on the 
+idea that the forward-in-time approximation of the time derivative is estimating the derivative at the halfway point 
 between times n and n+1. Set-up: The temperature (u) is initially distributed over a one-dimensional, 
 one-unit-long interval.
 """
