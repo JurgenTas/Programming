@@ -1,6 +1,7 @@
 """
-Solves the Poisson equation (elliptic PDE). Set-up: two (rectangular-shaped) charges are 
-placed in a two-dimensional box. The potential is zero on the walls and
+Solves the Poisson equation (elliptic PDE): https://en.wikipedia.org/wiki/Poisson%27s_equation 
+
+Set-up: two (rectangular-shaped) charges are placed in a two-dimensional box. The potential is zero on the walls and
 the charges have opposite sized densities.
 """
 
