@@ -12,8 +12,8 @@ import numpy as np
 from scipy.sparse import diags
 
 # Globals:
-M = 100  # Number of spatial slices
-N = 100  # Number of time steps
+M = 1000  # Number of spatial slices
+N = 1000  # Number of time steps
 D = 1.0  # thermal diffusivity
 T = 1.0  # number of seconds (s)
 L = 1.0  # size of grid
@@ -31,7 +31,7 @@ def solve(dx, dt):
 
     # init. initial temperature distribution:
     u = [mt.sin(i * dx * mt.pi) for i in range(M)]
-    u[0], u[-1] = 0, 0  # boundary conditions
+    u[0], u[-1] = 0, 0  # Dirichlet boundary conditions
     result = [None] * N
     result[0] = u
 
@@ -51,8 +51,8 @@ def main():
     dt = T / N  # time spacing
     result = solve(dx, dt)
 
-    # plot 15 first timestep:
-    n = 15
+    # plot 100 first timesteps:
+    n = 100
     x = np.linspace(0, L, M)
     for i in range(n):
         f = result[i]
