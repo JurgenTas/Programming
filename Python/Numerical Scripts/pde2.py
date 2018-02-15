@@ -35,16 +35,16 @@ def solve(dx, dt):
     # init. initial temperature distribution:
     u = [mt.sin(i * dx * mt.pi) for i in range(M)]
     u[0], u[-1] = 0, 0  # Dirichlet boundary conditions
-    result = [None] * N
-    result[0] = u
+    res = [None] * N # init. result list
+    res[0] = u
 
     # solve linear system of equations and update rhs:
-    arr = mtrx2.dot(u[1:-1])
+    rhs = mtrx2.dot(u[1:-1])
     for i in range(1, N):
         sol = [0] * M  # init. solution vector
-        sol[1:-1] = np.linalg.solve(mtrx1, arr)
-        arr = mtrx2.dot(sol[1:-1])
-        result[i] = sol
+        sol[1:-1] = np.linalg.solve(mtrx1, rhs)
+        rhs = mtrx2.dot(sol[1:-1])
+        res[i] = sol
     return result
 
 
