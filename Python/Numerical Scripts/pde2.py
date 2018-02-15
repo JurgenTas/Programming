@@ -1,8 +1,11 @@
 """
-Solves the one-dimensional heat equation (parabolic PDE) using the Crank-Nicholson scheme. This scheme is based on the 
-idea that the forward-in-time approximation of the time derivative is estimating the derivative at the halfway point 
-between times n and n+1. Set-up: The temperature (u) is initially distributed over a one-dimensional, 
-one-unit-long interval.
+Solves the one-dimensional heat equation (parabolic PDE) using the Crank-Nicholson scheme: 
+
+https://en.wikipedia.org/wiki/Heat_equation
+https://en.wikipedia.org/wiki/Crank%E2%80%93Nicolson_method
+
+This scheme is based on the idea that the forward-in-time approximation of the time derivative is estimating the derivative at the halfway point 
+between times n and n+1. Set-up: The temperature (u) is initially distributed over a one-dimensional, one-unit-long interval.
 """
 
 import math as mt
@@ -15,7 +18,7 @@ from scipy.sparse import diags
 M = 1000  # Number of spatial slices
 N = 1000  # Number of time steps
 D = 1.0  # thermal diffusivity
-T = 1.0  # number of seconds (s)
+T = 1.0  # number of seconds 
 L = 1.0  # size of grid
 
 
