@@ -17,9 +17,9 @@ from scipy.sparse import diags
 # Globals:
 M = 1000  # Number of spatial slices
 N = 1000  # Number of time steps
-D = 1.0  # thermal diffusivity
-T = 1.0  # number of seconds 
-L = 1.0  # size of grid
+D = 1.0  # Thermal diffusivity
+T = 1.0  # Number of seconds 
+L = 1.0  # Size of grid
 
 
 def solve(dx, dt):
@@ -32,16 +32,16 @@ def solve(dx, dt):
     mtrx1 = diags([-c, 2 * (1 + c), -c], [1, 0, -1], shape=(M - 2, M - 2)).toarray()
     mtrx2 = diags([c, 2 * (1 - c), c], [1, 0, -1], shape=(M - 2, M - 2)).toarray()
 
-    # init. initial temperature distribution:
+    # Init. initial temperature distribution:
     u = [mt.sin(i * dx * mt.pi) for i in range(M)]
     u[0], u[-1] = 0, 0  # Dirichlet boundary conditions
     res = [None] * N # init. result list
     res[0] = u
 
-    # solve linear system of equations and update rhs:
+    # Solve linear system of equations and update rhs:
     rhs = mtrx2.dot(u[1:-1])
     for i in range(1, N):
-        sol = [0] * M  # init. solution vector
+        sol = [0] * M  # Init. solution vector
         sol[1:-1] = np.linalg.solve(mtrx1, rhs)
         rhs = mtrx2.dot(sol[1:-1])
         res[i] = sol
@@ -49,12 +49,12 @@ def solve(dx, dt):
 
 
 def main():
-    # init spatial and time step:
+    # Init. spatial and time step:
     dx = L / (M - 1)  # grid spacing
     dt = T / N  # time spacing
     result = solve(dx, dt)
 
-    # plot 100 first timesteps:
+    # Plot 100 first timesteps:
     n = 100
     x = np.linspace(0, L, M)
     for i in range(n):
