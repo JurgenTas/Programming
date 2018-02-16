@@ -4,8 +4,9 @@ Solves the one-dimensional heat equation (parabolic PDE) using the Crank-Nichols
 https://en.wikipedia.org/wiki/Heat_equation
 https://en.wikipedia.org/wiki/Crank%E2%80%93Nicolson_method
 
-This scheme is based on the idea that the forward-in-time approximation of the time derivative is estimating the derivative at the halfway point 
-between times n and n+1. Set-up: The temperature (u) is initially distributed over a one-dimensional, one-unit-long interval.
+This scheme is based on the idea that the forward-in-time approximation of the time derivative is estimating the 
+derivative at the halfway point between times n and n+1. Set-up: The temperature (u) is initially distributed over a 
+one-dimensional, one-unit-long interval.
 """
 
 import math as mt
@@ -35,7 +36,7 @@ def solve(dx, dt):
     # Init. initial temperature distribution:
     u = [mt.sin(i * dx * mt.pi) for i in range(M)]
     u[0], u[-1] = 0, 0  # Dirichlet boundary conditions
-    res = [None] * N # init. result list
+    res = [None] * N  # init. result list
     res[0] = u
 
     # Solve linear system of equations and update rhs:
@@ -45,7 +46,7 @@ def solve(dx, dt):
         sol[1:-1] = np.linalg.solve(mtrx1, rhs)
         rhs = mtrx2.dot(sol[1:-1])
         res[i] = sol
-    return result
+    return res
 
 
 def main():
@@ -54,13 +55,14 @@ def main():
     dt = T / N  # time spacing
     result = solve(dx, dt)
 
-    # Plot 100 first timesteps:
+    # Plot 100 first time steps:
     n = 100
     x = np.linspace(0, L, M)
     for i in range(n):
         f = result[i]
-        plt.plot(x, f, str(i/n))
+        plt.plot(x, f, str(i / n))
     plt.show()
-  
+
+
 if __name__ == "__main__":
     main()

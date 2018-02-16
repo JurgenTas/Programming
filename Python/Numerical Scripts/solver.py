@@ -3,9 +3,9 @@ __author__ = 'J Tas'
 
 import math as mt
 
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy import optimize as opt
-import matplotlib.pyplot as plt
 
 
 # =====================================================================

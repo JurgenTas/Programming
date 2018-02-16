@@ -8,11 +8,11 @@ from sklearn.cross_validation import train_test_split
 from sklearn import metrics
 from sklearn.cross_validation import cross_val_score
 
+
 # =====================================================================
 
 
 def fit(x, y):
-
     # evaluate the model by splitting into train and test sets
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=0)
     model = LogisticRegression()
@@ -37,6 +37,7 @@ def fit(x, y):
     print(scores)
     print(scores.mean())
 
+
 # =====================================================================
 
 
@@ -46,6 +47,7 @@ def load():
     y = np.where(y == 'Iris-setosa', -1, 1)
     x = df.iloc[:, 0:1].values
     return (x - x.mean(axis=0) / x.std(axis=0)), y
+
 
 # =====================================================================
 
