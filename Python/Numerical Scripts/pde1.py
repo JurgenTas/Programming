@@ -52,7 +52,7 @@ def f(i, j):
 
 
 def plot(x):
-    plt.imshow(x, interpolation='bilinear', cmap='hot', origin='lower', extent=[0, 1, 0, 1], vmax=abs(x).max(),
+    plt.imshow(x, interpolation='bilinear', cmap="coolwarm", origin='lower', extent=[0, 1, 0, 1], vmax=abs(x).max(),
                vmin=-abs(x).max())
     plt.show()
 

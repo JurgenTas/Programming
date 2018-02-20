@@ -15,11 +15,11 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.sparse import diags
 
 # Globals:
-M = 100  # Number of spatial slices
-N = 800  # Number of time steps
+M = 20  # Number of spatial slices
+N = 40  # Number of time steps
 T = 1.0  # Number of seconds
 L = 1.0  # Size of bar
-C = 8  # Wave speed
+C = 2  # Wave speed
 
 
 def solve(dx, dt):
@@ -59,7 +59,7 @@ def plot(x, y, z):
     x, y = np.meshgrid(x, y)
     fig = plt.figure()
     ax = Axes3D(fig)
-    surf = ax.plot_surface(x, y, z, cmap='RdYlBu_r', rstride=1, cstride=1)
+    surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, cmap="coolwarm")
 
     # Add a color bar which maps values to colors.
     fig.colorbar(surf, shrink=0.5, aspect=5)

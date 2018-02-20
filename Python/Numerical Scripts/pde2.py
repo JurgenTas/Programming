@@ -9,15 +9,14 @@ derivative at the halfway point between times n and n+1. Set-up: The temperature
 one-dimensional, one-unit-long interval.
 """
 
-import math as mt
-
 import matplotlib.pyplot as plt
 import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
 from scipy.sparse import diags
 
 # Globals:
-M = 1000  # Number of spatial slices
-N = 1000  # Number of time steps
+M = 25  # Number of spatial slices
+N = 50  # Number of time steps
 D = 1.0  # Thermal diffusivity
 T = 1.0  # Number of seconds 
 L = 1.0  # Size of grid
@@ -34,34 +33,42 @@ def solve(dx, dt):
     mtrx2 = diags([c, 2 * (1 - c), c], [1, 0, -1], shape=(M - 2, M - 2)).toarray()
 
     # Init. initial temperature distribution:
-    u = [mt.sin(i * dx * mt.pi) for i in range(M)]
+    u = [(i * dx) * (1 - i * dx) for i in range(M)]
     u[0], u[-1] = 0, 0  # Dirichlet boundary conditions
-    res = [None] * N  # init. result list
-    res[0] = u
 
-    # Solve linear system of equations and update rhs:
+    # Apply scheme for t = 1, 2, 3,...
+    x = np.linspace(0, L, M)
+    y = np.linspace(0, T, N)
+    z = np.zeros((len(y), len(x)))
+    z[0] = u
     rhs = mtrx2.dot(u[1:-1])
     for i in range(1, N):
         sol = [0] * M  # Init. solution vector
         sol[1:-1] = np.linalg.solve(mtrx1, rhs)
         rhs = mtrx2.dot(sol[1:-1])
-        res[i] = sol
-    return res
+        z[i] = sol
+    return x, y, z
+
+
+def plot(x, y, z):
+    x, y = np.meshgrid(x, y)
+    fig = plt.figure()
+    ax = Axes3D(fig)
+    surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, cmap="coolwarm")
+
+    # Add a color bar which maps values to colors.
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+    plt.show()
 
 
 def main():
     # Init. spatial and time step:
     dx = L / (M - 1)  # grid spacing
     dt = T / N  # time spacing
-    result = solve(dx, dt)
+    x, y, z = solve(dx, dt)
 
-    # Plot 100 first time steps:
-    n = 100
-    x = np.linspace(0, L, M)
-    for i in range(n):
-        f = result[i]
-        plt.plot(x, f, str(i / n))
-    plt.show()
+    # plot result:
+    plot(x, y, z)
 
 
 if __name__ == "__main__":
