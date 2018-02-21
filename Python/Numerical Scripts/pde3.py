@@ -15,7 +15,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.sparse import diags
 
 # Globals:
-M = 100  # Number of spatial slices
+M = 100  # Number of grid points
 N = 200  # Number of time steps
 T = 1.0  # Number of seconds
 L = 1.0  # Size of bar
@@ -73,9 +73,10 @@ def plot(x, y, z):
 
 def main():
     # Init. spatial and time step:
-    dx = L / (M - 1)  # grid spacing
+    dx = L / (M-1)  # grid spacing
     dt = T / N  # time spacing
     x, y, z = solve(dx, dt)
+    print(x, dx)
 
     # plot result:
     plot(x, y, z)
