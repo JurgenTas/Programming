@@ -54,7 +54,7 @@ def plot(x, y, z):
     x, y = np.meshgrid(x, y)
     fig = plt.figure()
     ax = Axes3D(fig)
-    surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, cmap="coolwarm")
+    surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, cmap="hot")
 
     # Add a color bar which maps values to colors.
     fig.colorbar(surf, shrink=0.5, aspect=5)
