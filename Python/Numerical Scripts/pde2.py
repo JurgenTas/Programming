@@ -15,9 +15,9 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.sparse import diags
 
 # Globals:
-M = 25  # Number of spatial slices
-N = 50  # Number of time steps
-D = 1.0  # Thermal diffusivity
+M = 100  # Number of spatial slices
+N = 200  # Number of time steps
+D = 1  # Thermal diffusivity
 T = 1.0  # Number of seconds 
 L = 1.0  # Size of grid
 
@@ -54,7 +54,12 @@ def plot(x, y, z):
     x, y = np.meshgrid(x, y)
     fig = plt.figure()
     ax = Axes3D(fig)
-    surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, cmap="hot")
+    surf = ax.plot_surface(x, y, z, rstride=3, cstride=3, linewidth=0.3, cmap="coolwarm", vmax=abs(z).max(),
+                           vmin=0)
+    ax.set_xlabel('x')
+    ax.set_ylabel('t')
+    ax.set_zlabel('u')
+    ax.view_init(30, 45)
 
     # Add a color bar which maps values to colors.
     fig.colorbar(surf, shrink=0.5, aspect=5)
@@ -63,7 +68,7 @@ def plot(x, y, z):
 
 def main():
     # Init. spatial and time step:
-    dx = L / (M - 1)  # grid spacing
+    dx = L / M  # grid spacing
     dt = T / N  # time spacing
     x, y, z = solve(dx, dt)
 
