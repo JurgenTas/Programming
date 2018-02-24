@@ -73,10 +73,9 @@ def plot(x, y, z):
 
 def main():
     # Init. spatial and time step:
-    dx = L / (M-1)  # grid spacing
+    dx = L / (M - 1)  # grid spacing
     dt = T / N  # time spacing
     x, y, z = solve(dx, dt)
-    print(x, dx)
 
     # plot result:
     plot(x, y, z)

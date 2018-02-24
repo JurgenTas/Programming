@@ -14,7 +14,7 @@ M = 500  # Number of grid points per side
 OMEGA = 0.9  # Parameters to determine over-relaxation
 ITER = 7500  # Maximum number of iterations
 L = 1
-TOL = 1e-4  # Target accuracy
+TOL = 1e-6  # Target accuracy
 
 
 def solve(x):
