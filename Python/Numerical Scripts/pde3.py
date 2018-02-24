@@ -1,10 +1,10 @@
 """
-Set-up: we model vibrations of a homogeneous bar of length L with constant wave speed c > 0. We
-impose Dirichlet boundary conditions along with the usual initial conditions.
+Set-up: we model vibrations of a homogeneous bar of length L with constant wave speed c > 0. Dirichlet boundary conditions 
+are imposed along with the usual initial conditions.
 
 Similar to the numerical schemes for the heat equation, we can use an approximation of derivatives by difference 
 quotients to arrive at a numerical scheme for the wave equation. We replace the second order derivatives by their 
-standard finite difference approximations. This scheme is conditionally stable; i.e. 
+standard finite difference approximations. This scheme is conditionally stable.
 
 http://www-users.math.umn.edu/~olver/num_/lnp.pdf
 """
@@ -24,7 +24,7 @@ C = 1  # Wave speed
 
 def solve(dx, dt):
     """
-    Solve using a (simple) explicit difference scheme; i.e. 
+    Solve using a (simple) explicit difference scheme. 
     """
 
     # init. sigma:
