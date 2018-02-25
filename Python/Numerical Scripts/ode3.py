@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Globals:
-MU = 0.3
+MU = 0.05
 
 
 def f(x, y):
@@ -21,7 +21,7 @@ def f(x, y):
     return np.array([y1, y2], float)
 
 
-def solve(func, x, y, xstop, h, tol=1.0e-6, iterstop=10000000):
+def solve(func, t, y, tstop, h, tol=1.0e-8, iterstop=10000000):
     """
     Implements and adaptive Runge-Kutta method using Dormant-Price
     coefficients, i.e. see
@@ -69,19 +69,19 @@ def solve(func, x, y, xstop, h, tol=1.0e-6, iterstop=10000000):
     b64 = -2187 / 6784
     b65 = 11 / 84
 
-    xlist = []
+    tlist = []
     ylist = []
-    xlist.append(x)
+    tlist.append(t)
     ylist.append(y)
     stopper = 0  # Integration stopper(0 = off, 1 = on)
-    k0 = h * func(x, y)
+    k0 = h * func(t, y)
     for i in range(iterstop):
-        k1 = h * func(x + a1 * h, y + b10 * k0)
-        k2 = h * func(x + a2 * h, y + b20 * k0 + b21 * k1)
-        k3 = h * func(x + a3 * h, y + b30 * k0 + b31 * k1 + b32 * k2)
-        k4 = h * func(x + a4 * h, y + b40 * k0 + b41 * k1 + b42 * k2 + b43 * k3)
-        k5 = h * func(x + a5 * h, y + b50 * k0 + b51 * k1 + b52 * k2 + b53 * k3 + b54 * k4)
-        k6 = h * func(x + a6 * h, y + b60 * k0 + b62 * k2 + b63 * k3 + b64 * k4 + b65 * k5)
+        k1 = h * func(t + a1 * h, y + b10 * k0)
+        k2 = h * func(t + a2 * h, y + b20 * k0 + b21 * k1)
+        k3 = h * func(t + a3 * h, y + b30 * k0 + b31 * k1 + b32 * k2)
+        k4 = h * func(t + a4 * h, y + b40 * k0 + b41 * k1 + b42 * k2 + b43 * k3)
+        k5 = h * func(t + a5 * h, y + b50 * k0 + b51 * k1 + b52 * k2 + b53 * k3 + b54 * k4)
+        k6 = h * func(t + a6 * h, y + b60 * k0 + b62 * k2 + b63 * k3 + b64 * k4 + b65 * k5)
         dy = c0 * k0 + c2 * k2 + c3 * k3 + c4 * k4 + c5 * k5
 
         diff = (c0 - d0) * k0 + (c2 - d2) * k2 + (c3 - d3) * k3 + (c4 - d4) * k4 + (c5 - d5) * k5 - d6 * k6
@@ -91,8 +91,8 @@ def solve(func, x, y, xstop, h, tol=1.0e-6, iterstop=10000000):
         # Accept integration step if error e is within tolerance
         if err <= tol:
             y = y + dy
-            x = x + h
-            xlist.append(x)
+            t = t + h
+            tlist.append(t)
             ylist.append(y)
             if stopper == 1:
                 break  # Reached end of x-range
@@ -100,8 +100,8 @@ def solve(func, x, y, xstop, h, tol=1.0e-6, iterstop=10000000):
                 h_next = 10.0 * h
 
             # Check if next step is the last one; if so, adjust h
-            if (h > 0.0) == ((x + h_next) >= xstop):
-                h_next = xstop - x
+            if (h > 0.0) == ((t + h_next) >= tstop):
+                h_next = tstop - t
                 stopper = 1
             k0 = k6 * h_next / h
         else:
@@ -109,26 +109,33 @@ def solve(func, x, y, xstop, h, tol=1.0e-6, iterstop=10000000):
                 h_next = 0.1 * h
             k0 = k0 * h_next / h
         h = h_next
-    return np.array(xlist), np.array(ylist)
+    return np.array(tlist), np.array(ylist)
 
 
-def plot(x, y):
-    fig, ax = plt.subplots()
-    ax.plot(x, y, color='red')
-    ax.set_xlabel('y')
-    ax.set_ylabel('dy/dt')
-    ax.grid()
+def plot(t, y, dy):
+    plt.subplot(2, 1, 1)
+    plt.grid(True)
+    plt.plot(t, y, linewidth=0.75)
+    plt.xlabel('t')
+    plt.ylabel('y')
+
+    plt.subplot(2, 1, 2)
+    plt.grid(True)
+    plt.plot(y, dy, linewidth=0.75)
+    plt.xlabel('y')
+    plt.ylabel('dy/dt')
+
     plt.show()
 
 
 def main():
-    x = 0
+    t = 0
     y = [0.01, 0]  # Initial conditions
-    h = 1e-4  # Initial step size
-    xlist, ylist = solve(f, x, y, 125, h)
+    h = 1e-6  # Initial step size
+    tlist, ylist = solve(f, t, y, 300, h)
 
     # Plot results:
-    plot(ylist[:, 0], ylist[:, 1])
+    plot(tlist, ylist[:, 0], ylist[:, 1])
 
 
 if __name__ == "__main__":
