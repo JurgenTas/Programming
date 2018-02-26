@@ -14,7 +14,7 @@ import numpy as np
 MU = 0.075
 
 
-def f(x, y):
+def f(t, y):
     # Right-hand side of first order system of equations. Returns 2D vector of functions.
     y1 = y[1]
     y2 = MU * (1 - y[0] * y[0]) * y[1] - y[0]
@@ -95,7 +95,7 @@ def solve(func, t, y, tstop, h, tol=1.0e-8, iterstop=10000000):
             tlist.append(t)
             ylist.append(y)
             if stopper == 1:
-                break  # Reached end of x-range
+                break  # Reached end of t-range
             if abs(h_next) > 10.0 * abs(h):
                 h_next = 10.0 * h
 
