@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Globals:
-MU = 0.05
+MU = 0.075
 
 
 def f(x, y):
@@ -115,13 +115,13 @@ def solve(func, t, y, tstop, h, tol=1.0e-8, iterstop=10000000):
 def plot(t, y, dy):
     plt.subplot(2, 1, 1)
     plt.grid(True)
-    plt.plot(t, y, linewidth=0.75)
+    plt.plot(t, y)
     plt.xlabel('t')
     plt.ylabel('y')
 
     plt.subplot(2, 1, 2)
     plt.grid(True)
-    plt.plot(y, dy, linewidth=0.75)
+    plt.plot(y, dy)
     plt.xlabel('y')
     plt.ylabel('dy/dt')
 
@@ -132,7 +132,7 @@ def main():
     t = 0
     y = [0.01, 0]  # Initial conditions
     h = 1e-6  # Initial step size
-    tlist, ylist = solve(f, t, y, 300, h)
+    tlist, ylist = solve(f, t, y, 200, h)
 
     # Plot results:
     plot(tlist, ylist[:, 0], ylist[:, 1])
