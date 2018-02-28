@@ -78,7 +78,8 @@ class Adaline(object):
 
 
 def load():
-    df = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data', header=None)
+    link = 'https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data'
+    df = pd.read_csv(link, header=None)
     y = df.iloc[:, 4].values
     y = np.where(y == 'Iris-setosa', 0, 1)
     x = df.iloc[:, [0, 1, 2, 3]].values

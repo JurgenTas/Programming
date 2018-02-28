@@ -79,12 +79,16 @@ def solve(func, t, y, tstop, h, tol=1.0e-8, iterstop=10000000):
         k1 = h * func(t + a1 * h, y + b10 * k0)
         k2 = h * func(t + a2 * h, y + b20 * k0 + b21 * k1)
         k3 = h * func(t + a3 * h, y + b30 * k0 + b31 * k1 + b32 * k2)
-        k4 = h * func(t + a4 * h, y + b40 * k0 + b41 * k1 + b42 * k2 + b43 * k3)
-        k5 = h * func(t + a5 * h, y + b50 * k0 + b51 * k1 + b52 * k2 + b53 * k3 + b54 * k4)
-        k6 = h * func(t + a6 * h, y + b60 * k0 + b62 * k2 + b63 * k3 + b64 * k4 + b65 * k5)
+        k4 = h * func(t + a4 * h,
+                      y + b40 * k0 + b41 * k1 + b42 * k2 + b43 * k3)
+        k5 = h * func(t + a5 * h,
+                      y + b50 * k0 + b51 * k1 + b52 * k2 + b53 * k3 + b54 * k4)
+        k6 = h * func(t + a6 * h,
+                      y + b60 * k0 + b62 * k2 + b63 * k3 + b64 * k4 + b65 * k5)
         dy = c0 * k0 + c2 * k2 + c3 * k3 + c4 * k4 + c5 * k5
 
-        diff = (c0 - d0) * k0 + (c2 - d2) * k2 + (c3 - d3) * k3 + (c4 - d4) * k4 + (c5 - d5) * k5 - d6 * k6
+        diff = (c0 - d0) * k0 + (c2 - d2) * k2 + (c3 - d3) * k3 + \
+               (c4 - d4) * k4 + (c5 - d5) * k5 - d6 * k6
         err = math.sqrt(np.sum(diff ** 2) / len(y))
         h_next = 0.9 * h * (tol / err) ** 0.2
 
