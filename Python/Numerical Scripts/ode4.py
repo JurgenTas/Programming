@@ -49,12 +49,24 @@ def plot(xp, yp1, yp2):
     """
     Plot results.
     """
-    plt.plot(xp, yp1, 'r--o', label='Numerical', markersize=4)
-    plt.plot(xp, yp2, 'b-', label='Exact')
-    plt.legend(loc='upper left', shadow=True)
+
+    plt.subplot(2, 1, 1)
+    plt.grid(True)
+    plt.plot(xp, yp1, '-o', markersize=4)
     plt.xlabel('r')
     plt.ylabel('T')
+    plt.grid(True)
     plt.title('Temperature profile through the thickness of the cylinder')
+
+    # calculate relative error:
+    yp3 = np.absolute(yp1 - yp2)
+    plt.subplot(2, 1, 2)
+    plt.grid(True)
+    plt.plot(xp, yp3, '-o', markersize=4)
+    plt.xlabel('r')
+    plt.grid(True)
+    plt.title('Approximation error')
+
     plt.show()
 
 
