@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Globals:
-M = 12  # Grid size
+M = 16  # Grid size
 R = 0.1  # Radius of the cylinder
 T1 = 0.0  # Temperature at r = R/2
 T2 = 200.0  # Temperature at r = R

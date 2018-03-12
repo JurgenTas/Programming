@@ -17,8 +17,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.sparse import diags
 
 # Globals:
-M = 100  # Number of grid points
-N = 200  # Number of time steps
+M = 64  # Number of grid points
+N = 128  # Number of time steps
 D = 1  # Thermal diffusivity
 T = 1.0  # Number of seconds 
 L = 1.0  # Size of grid
