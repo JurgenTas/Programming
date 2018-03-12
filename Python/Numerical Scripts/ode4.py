@@ -58,7 +58,7 @@ def plot(xp, yp1, yp2):
     plt.grid(True)
     plt.title('Temperature profile through the thickness of the cylinder')
 
-    # calculate relative error:
+    # calculate absolute error:
     yp3 = np.absolute(yp1 - yp2)
     plt.subplot(2, 1, 2)
     plt.grid(True)
