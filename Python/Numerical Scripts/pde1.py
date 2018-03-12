@@ -1,8 +1,10 @@
 """
-Solves the Poisson equation (elliptic PDE): https://en.wikipedia.org/wiki/Poisson%27s_equation 
+Solves the Poisson equation (elliptic PDE):
+https://en.wikipedia.org/wiki/Poisson%27s_equation
 
-Set-up: two (rectangular-shaped) charges are placed in a two-dimensional box. The potential is zero on the walls and
-the charges have opposite sized densities.
+Set-up: two (rectangular-shaped) charges are placed in a two-dimensional
+box. The potential is zero on the walls and the charges have opposite
+sized densities.
 """
 
 import matplotlib.pyplot as plt
@@ -29,7 +31,8 @@ def solve(x):
         err = 0
         for i in range(1, M):
             for j in range(1, M):
-                diff = (x[i + 1, j] + x[i - 1, j] + x[i, j + 1] + x[i, j - 1] + c1 * f(i, j, dx)) / 4 - x[i, j]
+                diff = (x[i + 1, j] + x[i - 1, j] + x[i, j + 1] + x[
+                    i, j - 1] + c1 * f(i, j, dx)) / 4 - x[i, j]
                 x[i, j] += c2 * diff
                 err = max(err, abs(diff))
         errs.append(err)
@@ -56,7 +59,8 @@ def plot(x, y, z):
     x, y = np.meshgrid(x, y)
     fig = plt.figure()
     ax = Axes3D(fig)
-    surf = ax.plot_surface(x, y, z, rstride=3, cstride=3, linewidth=0.3, cmap="coolwarm")
+    surf = ax.plot_surface(x, y, z, rstride=3, cstride=3, linewidth=0.3,
+        cmap="coolwarm")
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_zlabel('u')

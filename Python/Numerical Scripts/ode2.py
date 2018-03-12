@@ -10,7 +10,8 @@ CONST3 = 8.0 / 3.0
 
 
 class Ode3:
-    """Solve dr/dt = f(r,t). With r is a 3D vector, f is a 3D vector of functions."""
+    """Solve dr/dt = f(r,t). With r is a 3D vector, f is a 3D vector of
+    functions."""
 
     def __init__(self, a, b, n=10):
         self.h = (b - a) / n

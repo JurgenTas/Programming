@@ -1,9 +1,11 @@
 """
-Set-up: we model vibrations of a homogeneous bar of length L with constant wave speed c > 0. Dirichlet boundary conditions 
+Set-up: we model vibrations of a homogeneous bar of length L with constant
+wave speed c > 0. Dirichlet boundary conditions
 are imposed along with the usual initial conditions.
 
-Similar to the numerical schemes for the heat equation, we can use an approximation of derivatives by difference 
-quotients to arrive at a numerical scheme for the wave equation. We replace the second order derivatives by their 
+Similar to the numerical schemes for the heat equation, we can use an
+approximation of derivatives by difference  quotients to arrive at a numerical
+scheme for the wave equation. We replace  the second order derivatives by their
 standard finite difference approximations. This scheme is conditionally stable.
 
 http://www-users.math.umn.edu/~olver/num_/lnp.pdf
@@ -33,14 +35,16 @@ def solve(dx, dt):
         print("Warning: stability condition violated!")
 
     # init. matrices:
-    mtrx1 = sigma * diags([-1, 2, -1], [1, 0, -1], shape=(M - 2, M - 2)).toarray()
+    mtrx1 = sigma * diags([-1, 2, -1], [1, 0, -1],
+        shape=(M - 2, M - 2)).toarray()
     mtrx2 = diags([1], shape=(M - 2, M - 2)).toarray()
     mtrx3 = (2 * mtrx2 - mtrx1)
 
     # Calculate solution for t = 1, 2:
     u = [(i * dx) * (1 - i * dx) for i in range(M)]
     v = np.zeros(M, float)
-    v[1:-1] = [u[i] + 0.5 * sigma * (u[i - 1] - 2 * u[i] + u[i + 1]) for i in range(1, M - 1)]
+    v[1:-1] = [u[i] + 0.5 * sigma * (u[i - 1] - 2 * u[i] + u[i + 1]) for i in
+               range(1, M - 1)]
 
     # Apply scheme for t = 2, 3, 4,...
     x = np.linspace(0, L, M)
@@ -59,8 +63,9 @@ def plot(x, y, z):
     x, y = np.meshgrid(x, y)
     fig = plt.figure()
     ax = Axes3D(fig)
-    surf = ax.plot_surface(x, y, z, rstride=3, cstride=3, linewidth=0.3, cmap="coolwarm", vmax=abs(z).max(),
-                           vmin=-abs(z).max())
+    surf = ax.plot_surface(x, y, z, rstride=3, cstride=3, linewidth=0.3,
+        cmap="coolwarm", vmax=abs(z).max(),
+        vmin=-abs(z).max())
     ax.set_xlabel('x')
     ax.set_ylabel('t')
     ax.set_zlabel('u')

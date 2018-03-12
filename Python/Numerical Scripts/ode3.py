@@ -2,8 +2,8 @@
 We consider the van der Pol oscillator:
 i.e. https://en.wikipedia.org/wiki/Van_der_Pol_oscillator
 
-The van der Pol equation is an 2nd order ODE. This equation arises in the study of circuits
-containing vacuum.
+The van der Pol equation is an 2nd order ODE. This equation arises in the
+study of circuits containing vacuum.
 """
 import math
 
@@ -15,7 +15,8 @@ MU = 0.075
 
 
 def f(t, y):
-    # Right-hand side of first order system of equations. Returns 2D vector of functions.
+    # Right-hand side of first order system of equations. Returns 2D vector
+    # of functions.
     y1 = y[1]
     y2 = MU * (1 - y[0] * y[0]) * y[1] - y[0]
     return np.array([y1, y2], float)
