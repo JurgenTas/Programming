@@ -7,9 +7,8 @@ cylinder are
 
     T'' = (1/r) * T', T(R/2) = 0 and T(R) = 200.
 
-where T is the temperature.
-
-We solve this equation using a finite difference (FD) approach.
+where T is the temperature. We solve this equation using a finite
+difference (FD) approach.
 """
 
 import math as mt
@@ -18,8 +17,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Globals:
-M = 16  # Grid size
-R = 0.1  # Radius of the cylinder
+M = 32  # Grid size
+R = 1  # Radius of the cylinder
 T1 = 0.0  # Temperature at r = R/2
 T2 = 200.0  # Temperature at r = R
 
@@ -50,9 +49,9 @@ def plot(xp, yp1, yp2):
     """
     Plot results.
     """
-    plt.plot(xp, yp1, 'r--o', label='Numerical')
+    plt.plot(xp, yp1, 'r--o', label='Numerical', markersize=4)
     plt.plot(xp, yp2, 'b-', label='Exact')
-    plt.legend(framealpha=1, frameon=True)
+    plt.legend(loc='upper left', shadow=True)
     plt.xlabel('r')
     plt.ylabel('T')
     plt.title('Temperature profile through the thickness of the cylinder')
