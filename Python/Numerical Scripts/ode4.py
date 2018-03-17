@@ -24,37 +24,62 @@ T2 = 200.0  # Temperature at r = R
 
 
 def solve():
+    """
+    Solve using FD method.
+
+    :return: x-points, y-points
+    :rtype: tuple
+    """
     # Define step size, x-grid:
     h = (R / 2.0) / M
     xp = [(R / 2.0) + h * i for i in range(M + 1)]
 
     # Define FD matrix:
-    mtrx = np.zeros((M + 1, M + 1))
-    mtrx[0, 0], mtrx[M, M] = 1, 1
-    for i in range(1, M):
-        mtrx[i, i - 1] = 1.0 - 0.5 * (h / xp[i])
-        mtrx[i, i] = -2.0
-        mtrx[i, i + 1] = 1.0 + 0.5 * (h / xp[i])
+    a = matrix(xp, h)
 
     # Define FD rhs:
-    rhs = [0] * (M + 1)
-    rhs[0], rhs[M] = T1, T2
+    b = [0] * (M + 1)
+    b[0], b[M] = T1, T2
 
     # Solve and return solution:
-    yp = np.linalg.solve(mtrx, rhs)
-    return yp, xp
+    yp = np.linalg.solve(a, b)
+    return xp, yp
+
+
+def matrix(xp, h):
+    """
+    Helper function to construct LHS matrix.
+
+    :param xp: x-points
+    :type xp: lst
+    :param h: step size
+    :type h: float
+    :return: matrix
+    :rtype: numpy.array
+    """
+    a = np.zeros((M + 1, M + 1))
+    a[0, 0], a[M, M] = 1, 1
+    for i in range(1, M):
+        a[i, i - 1] = 1.0 - 0.5 * (h / xp[i])
+        a[i, i] = -2.0
+        a[i, i + 1] = 1.0 + 0.5 * (h / xp[i])
+    return mt
 
 
 def plot(xp, yp1, yp2):
     """
     Plot results.
-    """
 
+    :param xp: x-points
+    :type xp: list
+    :param yp1: numerical solution
+    :type yp1: list
+    :param yp2: analytical solution
+    :type yp2: list
+    """
     plt.subplot(2, 1, 1)
     plt.grid(True)
     plt.plot(xp, yp1, '-o', markersize=4)
-    plt.xlabel('r')
-    plt.ylabel('T')
     plt.grid(True)
     plt.title('Temperature profile through the thickness of the cylinder')
 
@@ -63,10 +88,8 @@ def plot(xp, yp1, yp2):
     plt.subplot(2, 1, 2)
     plt.grid(True)
     plt.plot(xp, yp3, '-o', markersize=4)
-    plt.xlabel('r')
     plt.grid(True)
     plt.title('Approximation error')
-
     plt.show()
 
 
