@@ -1,14 +1,13 @@
 """
 A thick cylinder (radius R) conveys a fluid with a temperature of 0 degrees
 Celsius. At the same time the cylinder is immersed in a bath that is kept at
-200 degrees Celsius. The  differential equation
-and the boundary conditions that govern steady-state heat conduction in the
-cylinder are
+200 degrees Celsius. The  differential equation and the boundary conditions
+that govern steady-state heat conduction in the cylinder are
 
     T'' = (1/r) * T', T(R/2) = 0 and T(R) = 200.
 
-where T is the temperature. We solve this equation using a finite
-difference (FD) approach.
+where T is the temperature. We solve this equation using a finite difference
+approach.
 """
 
 import math as mt
@@ -30,25 +29,24 @@ def solve():
     :return: x-points, y-points
     :rtype: tuple
     """
-    # Define step size, x-grid:
+    # Define step size h, x-points:
     h = (R / 2.0) / M
     xp = [(R / 2.0) + h * i for i in range(M + 1)]
 
-    # Define FD matrix:
+    # Define matrix:
     a = matrix(xp, h)
 
-    # Define FD rhs:
+    # Define rhs:
     b = [0] * (M + 1)
     b[0], b[M] = T1, T2
 
-    # Solve and return solution:
-    yp = np.linalg.solve(a, b)
-    return xp, yp
+    # Solve and return x-points & solution:
+    return xp, np.linalg.solve(a, b)
 
 
 def matrix(xp, h):
     """
-    Helper function to construct LHS matrix.
+    Helper function to construct matrix.
 
     :param xp: x-points
     :type xp: lst
@@ -63,7 +61,7 @@ def matrix(xp, h):
         a[i, i - 1] = 1.0 - 0.5 * (h / xp[i])
         a[i, i] = -2.0
         a[i, i + 1] = 1.0 + 0.5 * (h / xp[i])
-    return mt
+    return a
 
 
 def plot(xp, yp1, yp2):
@@ -95,7 +93,7 @@ def plot(xp, yp1, yp2):
 
 def main():
     # Numerical solution:
-    yp1, xp = solve()
+    xp, yp1 = solve()
 
     # Exact solution:
     c1 = (T1 - T2) / mt.log(0.5)
