@@ -24,7 +24,7 @@ def f(t, y):
 
 def solve(func, t, y, tstop, h, tol=1.0e-8, iterstop=10000000):
     """
-    Implements and adaptive Runge-Kutta method using Dormant-Price
+    Implements an adaptive Runge-Kutta method using Dormant-Price
     coefficients, i.e. see
 
     https://en.wikipedia.org/wiki/Dormand%E2%80%93Prince_method
