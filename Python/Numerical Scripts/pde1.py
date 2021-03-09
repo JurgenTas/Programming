@@ -12,7 +12,7 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
 # Globals:
-M = 256  # Number of grid points per side
+M = 512 # Number of grid points per side
 OMEGA = 0.9  # Parameters to determine over-relaxation
 ITER = 7500  # Maximum number of iterations
 L = 1
@@ -68,7 +68,7 @@ def plot(x, y, z):
 
     # Add a color bar which maps values to colors.
     fig.colorbar(surf, shrink=0.5, aspect=5)
-    plt.show()
+    plt.savefig("mygraph.png")
 
 
 def main():
