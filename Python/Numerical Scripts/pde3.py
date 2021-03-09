@@ -73,7 +73,7 @@ def plot(x, y, z):
 
     # Add a color bar which maps values to colors.
     fig.colorbar(surf, shrink=0.5, aspect=5)
-    plt.show()
+    plt.savefig("mygraph.png")
 
 
 def main():
