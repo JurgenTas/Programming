@@ -1,0 +1,7 @@
+name = "Matrix"
+uuid = "8ee6fb4c-a1b6-11ea-34af-e30c30eb190d"
+authors = ["Jurgen Tas <jtas@jibes.nl>"]
+version = "0.1.0"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"

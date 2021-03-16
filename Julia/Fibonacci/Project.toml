@@ -1,0 +1,4 @@
+name = "Fibonacci"
+uuid = "ea88b354-a174-11ea-00b6-c3a55a8340ae"
+authors = ["Jurgen Tas <jtas@jibes.nl>"]
+version = "0.1.0"
