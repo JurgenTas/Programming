@@ -1,4 +1,7 @@
 name = "Fibonacci"
-uuid = "ea88b354-a174-11ea-00b6-c3a55a8340ae"
-authors = ["Jurgen Tas <jtas@jibes.nl>"]
+uuid = "ca7cdee9-da1d-4487-aa21-97ec387bf2c9"
+authors = ["JurgenTas <jurgen.m.c.tas@gmail.com>"]
 version = "0.1.0"
+
+[deps]
+PkgTemplates = "14b8a8f1-9102-5b29-a752-f990bacb7fe1"
