@@ -1,0 +1,2257 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+
+	<channel>
+		<title>Planet Python</title>
+		<link>http://planetpython.org/</link>
+		<language>en</language>
+		<description>Planet Python - http://planetpython.org/</description>
+
+		<item>
+			<title>Real Python: The Real Python Podcast – Episode #7: AsyncIO +
+				Music, Origins of Black, and Managing Python Releases
+			</title>
+			<guid>https://realpython.com/podcasts/rpp/7/</guid>
+			<link>https://realpython.com/podcasts/rpp/7/</link>
+			<description>&lt;p&gt;Want to learn more about AsyncIO in Python,
+				with an example where you can see and hear events being
+				triggered in real-time? This week Christopher interviews Łukasz
+				Langa. Łukasz has created a talk for PyCon 2020 about using
+				AsyncIO with Music. In this talk he shows live examples of
+				coroutines, gathering, the event loop and events being
+				triggered to create a piece of music. They talk about his role
+				as the release manager for Python 3.8 and 3.9. He also provides
+				background on the origins of his very popular, uncompromising
+				code formatter, Black, and the types of problems it can solve
+				inside of an organization.
+
+				Łukasz previously worked for Facebook, which is where he
+				started Black. He talks about recently moving back to Poland.
+				Łukasz discusses his current work for Edge DB, building a new
+				generation object-relational database.&lt;/p&gt;
+				&lt;hr /&gt;
+				&lt;p&gt;&lt;em&gt;[ Improve Your Python With 🐍 Python Tricks
+				💌 – Get a short &amp;amp; sweet Python Trick delivered to your
+				inbox every couple of days. &lt;a href=&quot;https://realpython.com/python-tricks/?utm_source=realpython&amp;utm_medium=rss&amp;utm_campaign=footer&quot;&gt;&amp;gt;&amp;gt;
+				Click here to learn more and see examples&lt;/a&gt; ]&lt;/em&gt;&lt;/p&gt;
+			</description>
+			<pubDate>Fri, 01 May 2020 12:00:00 +0000</pubDate>
+		</item>
+		<item>
+			<title>BreadcrumbsCollector: @staticmethod considered a code
+				smell
+			</title>
+			<guid>
+				https://breadcrumbscollector.tech/staticmethod-considered-a-code-smell/
+			</guid>
+			<link>
+				https://breadcrumbscollector.tech/staticmethod-considered-a-code-smell/
+			</link>
+			<description>&lt;p&gt;Python offers quite a few built-in decorators
+				that can be used to give methods of classes certain
+				superpowers. &lt;code&gt;@property&lt;/code&gt; turning method
+				into a read-only field-like attribute is a classic example. Or
+				&lt;code&gt;@classmethod&lt;/code&gt; &amp;#8211; a method that
+				receives a class as a first argument, not an instance. Fun
+				fact, this kind of method is usually called static method in
+				other languages (e.g. Java, C#, C++ just to name a few).&lt;/p&gt;
+
+
+				&lt;p&gt;Speaking of static methods, you may occasionally
+				encounter methods decorated with &lt;code&gt;@staticmethod&lt;/code&gt;.
+				For instance, it often appears in codebases that are developed
+				using PyCharm IDE because it encourages developers to change
+				methods into static ones:&lt;/p&gt;
+
+
+				&lt;div class=&quot;wp-block-image&quot;&gt;&lt;img /&gt;&lt;/div&gt;
+
+
+				&lt;p&gt;&amp;#8230;but what are they?&lt;/p&gt;
+
+
+				&lt;h2&gt;What is @staticmethod?&lt;/h2&gt;
+
+
+				&lt;p&gt;We know already that a static method in Python is a
+				completely different creature than similarly named constructs
+				in other languages. &amp;#8220;normal&amp;#8221; accepts &lt;code&gt;self&lt;/code&gt;
+				as a first argument (tied to instance), &lt;code&gt;@classmethod&lt;/code&gt;
+				accepts &lt;code&gt;cls&lt;/code&gt; (class) and &lt;code&gt;staticmethod&lt;/code&gt;&amp;#8230;
+				does not accept either. All can, of course, have additional
+				arguments:&lt;/p&gt;
+
+
+				&lt;pre class=&quot;crayon-plain-tag&quot;&gt;class Example:
+				default_multiplier = 3
+
+				def __init__(self, multiplier: int) -&gt; None:
+				self._multiplier = multiplier
+
+				# tied to instance
+				def normal_method(self, argument: int) -&gt; int:
+				return self._multiplier * argument
+
+				@classmethod # tied to class
+				def class_method(cls, argument: int) -&gt; int:
+				return argument * cls.default_multiplier
+
+				@staticmethod # tied... but to what?!
+				def static_method(argument: int) -&gt; int:
+				return argument * 2
+
+				# Calling from an instance
+				# all method types can be called that way
+				example = Example(multiplier=4)
+				example.normal_method(1) # 4
+				example.class_method(1) # 3
+				example.static_method(1) # 2
+
+				# Calling from the class
+				Example.normal_method(1) # TypeError, need two arguments (self
+				and argument)
+				Example.class_method(1) # 3
+				Example.static_method(1) # 2&lt;/pre&gt;
+
+
+				&lt;p&gt;Although static method has no direct access to neither
+				an instance nor class, it is still tied to the latter but in a
+				bit more loose way &amp;#8211; it is living in a class
+				namespace.&lt;/p&gt;
+
+
+				&lt;p&gt;In simple words, it&amp;#8217;s like a normal function
+				written outside but &amp;#8220;attached&amp;#8221; to a certain
+				class. The only difference is that whenever someone needs to
+				use it, has to do it via instance or class.&lt;/p&gt;
+
+
+				&lt;p&gt;From the static method point of view, it has no
+				knowledge about encompassing class whatsoever. &lt;/p&gt;
+
+
+				&lt;p&gt;So why I am claiming &lt;code&gt;@staticmethods&lt;/code&gt;
+				are code smell?&lt;/p&gt;
+
+
+				&lt;h2&gt;What is a code smell?&lt;/h2&gt;
+
+
+				&lt;p&gt;First, a word or two of clarification because the
+				title might suggest static methods are bad and should be
+				avoided. That&amp;#8217;s not the point. If I were to argue
+				about that, I would use a word &lt;em&gt;antipattern&lt;/em&gt;.&lt;/p&gt;
+
+
+				&lt;blockquote&gt;&lt;p&gt;A code smell is a surface indication
+				that usually corresponds to a deeper problem&lt;/p&gt;&lt;cite&gt;&lt;a
+				href=&quot;http://martinfowler.com/bliki/CodeSmell.html&quot;&gt;http://martinfowler.com/bliki/CodeSmell.html&lt;/a&gt;&lt;/cite&gt;&lt;/blockquote&gt;
+
+
+				&lt;p&gt;For those who are not familiar with the term, such a
+				definition may still be worrying a bit. After all, if my code
+				&lt;img src=&quot;https://s.w.org/images/core/emoji/12.0.0-1/72x72/1f4a9.png&quot;
+				alt=&quot;💩&quot; class=&quot;wp-smiley&quot; /&gt; smells
+				&lt;img src=&quot;https://s.w.org/images/core/emoji/12.0.0-1/72x72/1f4a9.png&quot;
+				alt=&quot;💩&quot; class=&quot;wp-smiley&quot; /&gt; I should
+				do something about it, right? &lt;strong&gt;Not necessarily.&lt;/strong&gt;
+				Identifying a code smell is often more of an opportunity than
+				danger.&lt;/p&gt;
+
+
+				&lt;p&gt;But why it&amp;#8217;s even worth writing an article?
+				&lt;code&gt;@staticmethod&lt;/code&gt; may indicate low
+				cohesion of a class it belongs to.&lt;/p&gt;
+
+
+				&lt;h2&gt;What is cohesion?&lt;/h2&gt;
+
+
+				&lt;p&gt;In the shortest words, cohesion stands for how strong
+				is the relationship between class attributes. A class consists
+				of fields and methods. The more methods use fields, the higher
+				the cohesion. The maximum cohesion is when all methods use all
+				class fields (unrealistic, but that&amp;#8217;s theory ;)) If
+				only one or two methods use a certain subset of fields, then
+				cohesion is respectively lower. &lt;/p&gt;
+
+
+				&lt;p&gt;In general, high cohesion is desirable. It means that
+				class is focused on what it is doing. Bear in mind cohesion
+				remains an abstract term and there is no reason to try to
+				deliberately maximize for it. Still, when you face a code
+				challenge or wonder how to refactor, cohesion (or lack of such)
+				may give you invaluable hints.&lt;/p&gt;
+
+
+				&lt;h3&gt;What does it have to do with Python static methods?&lt;/h3&gt;
+
+
+				&lt;p&gt;Since static methods are, by their very definition,
+				not using class or instance fields. Hence, they ALWAYS lower
+				cohesion of a class. Now that we know high cohesion is
+				desirable, should you refactor them immediately&amp;#8230;?&lt;/p&gt;
+
+
+				&lt;p&gt;&lt;strong&gt;No.&lt;/strong&gt;&lt;/p&gt;
+
+
+				&lt;blockquote class=&quot;wp-block-quote&quot;&gt;&lt;p&gt;(&amp;#8230;)
+				practicality beats purity&lt;/p&gt;&lt;cite&gt;Zen of Python&lt;/cite&gt;&lt;/blockquote&gt;
+
+
+				&lt;p&gt;Even though a static method is not operating on
+				class/instance data, it is still (hopefully) there for a
+				reason. Most probably, it&amp;#8217;s a kind of auxiliary
+				function that&amp;#8217;s used by other, &amp;#8220;normal&amp;#8221;
+				methods.&lt;/p&gt;
+
+
+				&lt;p&gt;So if it&amp;#8217;s not a big deal when &lt;code&gt;@staticmethods&lt;/code&gt;
+				exist in your code, why should you even care? &lt;/p&gt;
+
+
+				&lt;h2&gt;Opportunity, not a danger&lt;/h2&gt;
+
+
+				&lt;p&gt;In a paragraph about code smells I mentioned they are
+				more an opportunity than a danger. Further explaining that,
+				code smells indicate an opportunity for a refactoring.
+				Naturally, refactoring for art&amp;#8217;s sake is nothing but
+				a waste (unless you treat it as an exercise to practice your
+				craft). &lt;/p&gt;
+
+
+				&lt;p&gt;However, when there is a good reason to refactor, &lt;code&gt;@staticmethods&lt;/code&gt;
+				are probably one of the lowest hanging fruits over there. They
+				are literally screaming &lt;em&gt;Hey! You can take me out if
+				you need to make this class smaller!&lt;/em&gt;&lt;/p&gt;
+
+
+				&lt;p&gt;That&amp;#8217;s one specific example of applying
+				cohesion-based criterion to guide your refactoring. Other,
+				idealised situation is when you can clearly identify two
+				separate subsets of fields and methods that operate on these
+				subsets.&lt;/p&gt;
+
+
+				&lt;pre class=&quot;crayon-plain-tag&quot;&gt;class
+				SplitPersonalityClass:
+				def __init__(self, field_a: list, field_b: int) -&gt; None:
+				self._field_a = field_a
+				self._field_b = field_b
+
+				def add_to_a(self, arg: int) -&gt; None:
+				if len(self._field_a) &gt; 10:
+				raise ValueError
+				self._field_a.append()
+
+				def get_from_a(self) -&gt; int:
+				return self._field_a.pop()
+
+				def multiply(self, arg: int) -&gt; int:
+				return self._field_b * arg&lt;/pre&gt;
+
+
+				&lt;p&gt;In this example, &lt;code&gt;SplitPersonalityClass&lt;/code&gt;
+				has two fields &amp;#8211; &lt;code&gt;field_a&lt;/code&gt; and
+				&lt;code&gt;field_b&lt;/code&gt;. The former is used only by
+				first two methods while the latter is used exclusively in the
+				last method. This class could be split into two separate
+				classes. Of course, if there is no other reason for them to
+				remain one (see other types of cohesion from Further Reading
+				section).&lt;/p&gt;
+
+
+				&lt;h2&gt;Summary&lt;/h2&gt;
+
+
+				&lt;p&gt;Although &lt;code&gt;@staticmethod&lt;/code&gt; smells
+				a bit, it&amp;#8217;s often no big deal. However, when facing a
+				need for refactoring a class, they&amp;#8217;re a perfect
+				candidate to move them out &lt;img src=&quot;https://s.w.org/images/core/emoji/12.0.0-1/72x72/1f609.png&quot;
+				alt=&quot;😉&quot; class=&quot;wp-smiley&quot; /&gt;&lt;/p&gt;
+
+
+				&lt;p&gt;&lt;strong&gt;Further reading&lt;/strong&gt;&lt;/p&gt;
+
+
+				&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;https://vanderburg.org/blog/2011/01/31/cohesion.html&quot;&gt;https://vanderburg.org/blog/2011/01/31/cohesion.html&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a
+				href=&quot;https://www.avatto.com/study-material/software-engineering-cohesion&quot;&gt;https://www.avatto.com/study-material/software-engineering-cohesion&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a
+				href=&quot;https://github.com/mschwager/cohesion&quot;&gt;https://github.com/mschwager/cohesion&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
+
+
+				&lt;p&gt;&lt;/p&gt;
+				&lt;p&gt;The post &lt;a rel=&quot;nofollow&quot; href=&quot;https://breadcrumbscollector.tech/staticmethod-considered-a-code-smell/&quot;&gt;@staticmethod
+				considered a code smell&lt;/a&gt; appeared first on &lt;a rel=&quot;nofollow&quot;
+				href=&quot;https://breadcrumbscollector.tech&quot;&gt;Breadcrumbs
+				Collector&lt;/a&gt;.&lt;/p&gt;
+			</description>
+			<pubDate>Fri, 01 May 2020 08:00:00 +0000</pubDate>
+		</item>
+		<item>
+			<title>Python Software Foundation: Lightning Talks Part 1 - Python
+				Language Summit 2020
+			</title>
+			<guid>
+				http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/cWtcQjdVcnQ/lightning-talks-part-1.html
+			</guid>
+			<link>
+				http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/cWtcQjdVcnQ/lightning-talks-part-1.html
+			</link>
+			<description>&lt;a href=&quot;http://3.bp.blogspot.com/-6oU0kt4rj-I/XquIvXEoWiI/AAAAAAAAE3w/DEFADH8dH1ELQYDV1EuEZ80O6ZGxaZWggCK4BGAYYCw/s1600/sumana-and-eric-snow.jpg&quot;&gt;&lt;img
+				border=&quot;0&quot; src=&quot;https://3.bp.blogspot.com/-6oU0kt4rj-I/XquIvXEoWiI/AAAAAAAAE3w/DEFADH8dH1ELQYDV1EuEZ80O6ZGxaZWggCK4BGAYYCw/s1600/sumana-and-eric-snow.jpg&quot;
+				/&gt;&lt;/a&gt;&lt;br /&gt;
+				&lt;h2&gt;
+				Sumana Harihareswara&lt;/h2&gt;
+				&lt;h1&gt;
+				What do you need from pip, PyPI, and packaging? &lt;/h1&gt;
+				&lt;br /&gt;
+				Python packaging has seen relatively quick development in
+				recent years as a result of increased funding; most famously
+				the new &lt;a href=&quot;https://pypi.org/&quot;&gt;PyPI.org&lt;/a&gt;
+				website was launched in 2018. The current work in progress
+				includes &lt;a href=&quot;https://pyfound.blogspot.com/2018/12/upcoming-pypi-improvements-for-2019.html&quot;&gt;malware
+				detection&lt;/a&gt; and &lt;a href=&quot;https://www.python.org/dev/peps/pep-0458/&quot;&gt;signed
+				packages&lt;/a&gt; on PyPI, a new dependency resolver for pip,
+				and a revamp of virtualenv. Much of this work is funded by
+				grants from companies. (&lt;a href=&quot;https://wiki.python.org/psf/Fundable%20Packaging%20Improvements&quot;&gt;Details
+				on the Working Group page&lt;/a&gt;.) Sumana Harihareswara from
+				the &lt;a href=&quot;https://wiki.python.org/psf/PackagingWG&quot;&gt;Packaging
+				Working Group&lt;/a&gt; is prolific grant proposal writer; she
+				presented ideas for further development.&lt;br /&gt;
+				&lt;br /&gt;
+				&lt;a href=&quot;https://pyfound.blogspot.com/2020/04/the-2020-python-language-summit.html&quot;&gt;Read
+				more 2020 Python Language Summit coverage&lt;/a&gt;.&lt;br /&gt;
+				&lt;hr /&gt;
+				Python packaging ideas for the future include:&lt;br /&gt;
+				&lt;br /&gt;
+				&lt;ul&gt;
+				&lt;li&gt;Better specifications, toolchain, and services for
+				building distributions&lt;br /&gt;
+				&lt;/li&gt;
+				&lt;li&gt;Robust interoperability testing&lt;br /&gt;
+				&lt;/li&gt;
+				&lt;li&gt;Revamp PyPI API&lt;br /&gt;
+				&lt;/li&gt;
+				&lt;li&gt;Make setuptools the reference implementation of the
+				distutils API&lt;br /&gt;
+				&lt;/li&gt;
+				&lt;li&gt;Provide more standardized editable installations&lt;br
+				/&gt;
+				&lt;/li&gt;
+				&lt;li&gt;Add support for pyproject.toml as a way to configure
+				setuptools&lt;br /&gt;
+				&lt;/li&gt;
+				&lt;li&gt;&lt;a href=&quot;https://github.com/pypa/packaging-problems/issues/25&quot;&gt;Create
+				&amp;amp; maintain a generic wheel-builder&lt;/a&gt;&lt;br /&gt;
+				&lt;/li&gt;
+				&lt;li&gt;&lt;a href=&quot;https://www.python.org/dev/peps/pep-0480/&quot;&gt;PEP
+				480: secure the developer-to-user supply chain &lt;/a&gt;&lt;br
+				/&gt;
+				&lt;/li&gt;
+				&lt;li&gt;&lt;a href=&quot;https://discuss.python.org/t/pep-600-future-manylinux-platform-tags-for-portable-linux-built-distributions/2414/&quot;&gt;Implement
+				perennial manylinux (PEP 600)&lt;/a&gt;&lt;/li&gt;
+				&lt;br /&gt;
+				&lt;/ul&gt;
+				Harihareswara solicited packaging ideas from the audience to
+				inform the &lt;a href=&quot;https://www.pypa.io/en/latest/roadmap/&quot;&gt;Python
+				Packaging Authority roadmap&lt;/a&gt; and the &lt;a href=&quot;https://wiki.python.org/psf/Fundable%20Packaging%20Improvements&quot;&gt;Fundable
+				Packaging Improvements&lt;/a&gt; page, asked them to add their
+				complaints to the &lt;a href=&quot;https://github.com/pypa/packaging-problems/issues&quot;&gt;packaging
+				problems list&lt;/a&gt;, and requested help writing grant
+				proposals. &lt;br /&gt;
+				&lt;br /&gt;
+				Since a &lt;a href=&quot;https://discuss.python.org/t/virtualenv-20-0-0-beta1-is-available/3077&quot;&gt;revamp
+				of virtualenv&lt;/a&gt; was listed among the Packaging Working
+				Group's current projects, Barry Warsaw wondered what advantages
+				virtualenv has over venv, which is now built in to all
+				supported Python versions. Bernat Gabor, who maintains
+				virtualenv, answered that virtualenv is faster, provides a
+				richer API for tools built on it, and serves as a laboratory
+				for ideas that might be merged into venv. &lt;br /&gt;
+				&lt;br /&gt;
+				Ernest Durbin provided a status update on malware checking: the
+				&lt;a href=&quot;https://warehouse.readthedocs.io/development/malware-checks/&quot;&gt;framework
+				is in place&lt;/a&gt; but only two checks have been
+				implemented, &quot;mainly for demonstration.&quot; He has
+				invited security researchers to implement more checks. &lt;br /&gt;
+				&lt;br /&gt;
+				David Mertz asked whether pip's new dependency resolver would
+				be able to resolve dependency conflicts. Paul Moore said he is
+				still researching what users want pip to do in the case of
+				conflicts, and what solutions are provided by resolver
+				algorithms. The new resolver is about to be released, but it is
+				still alpha-level and will be turned off by default. &lt;br /&gt;
+				&lt;br /&gt;
+				&lt;h2&gt;
+				Eric Snow&lt;/h2&gt;
+				&lt;h1&gt;
+				A Retrospective on My &quot;Multi-Core Python&quot; Project&lt;/h1&gt;
+				&lt;br /&gt;
+				Of all the schemes for freeing CPython from the Global
+				Interpreter Lock, the frontrunner is Eric Snow's plan to give
+				each subinterpreter its own lock. He &lt;a href=&quot;https://mail.python.org/pipermail/python-ideas/2015-June/034177.html&quot;&gt;proposed
+				the idea in 2015&lt;/a&gt;, began discussing and prototyping
+				the idea intensely, and burned out the next year. &quot;I was
+				trying to do too much on my own,&quot; said Snow. In 2017 he
+				resumed development, this time with dozens of collaborators,
+				and &lt;a href=&quot;https://www.python.org/dev/peps/pep-0554/&quot;&gt;wrote
+				PEP 554 to expose subinterpreters to pure Python programs&lt;/a&gt;,
+				which will ease testing for the multi-core project. &lt;a href=&quot;https://lwn.net/Articles/754162/&quot;&gt;He
+				presented his progress to the Language Summit in 2018&lt;/a&gt;
+				and in a &lt;a href=&quot;https://www.youtube.com/watch?v=7RlqbHCCVyc&quot;&gt;2019
+				PyCon talk&lt;/a&gt;. His &lt;a href=&quot;https://talkpython.fm/episodes/show/225/can-subinterpreters-free-us-from-pythons-gil&quot;&gt;TalkPython
+				interview&lt;/a&gt; last year was especially effective at
+				drawing attention to the project. &lt;br /&gt;
+				&lt;br /&gt;
+				Snow's immediate blocker is PEP 554's acceptance and
+				implementation, but much work remains after that. He told the
+				2020 Language Summit, &quot;I've just been chugging along,
+				little by little. Lots of &lt;em&gt;little&lt;/em&gt; pieces to
+				get this project done!&quot; Hard problems include passing data
+				safely between subinterpreters, the &quot;grind&quot; of
+				removing all the global variables, and reaching the actual
+				goal: creating a distinct GIL per subinterpreter. Snow predicts
+				the split GIL won't land in Python 3.9, but &quot;3.10 for
+				sure.&quot; &lt;br /&gt;
+				Snow thanked a large list of contributors, many of them outside
+				the core developer team. &lt;br /&gt;
+				&lt;br /&gt;
+				Kyle Stanley asked whether daemon threads should be still be
+				allowed in subinterpreters or not. (Victor Stinner &lt;a href=&quot;https://bugs.python.org/issue37266&quot;&gt;tried
+				to ban them&lt;/a&gt; but had to revert his change.) Snow
+				replied that daemon threads in subinterpreters lead to many
+				finalization problems, and their use should be discouraged, but
+				removing them entirely has proven too disruptive for the core
+				team to accomplish any time soon. &lt;div class=&quot;feedflare&quot;&gt;
+				&lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=cWtcQjdVcnQ:dbns6D37WWo:yIl2AUoC8zA&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?d=yIl2AUoC8zA&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=cWtcQjdVcnQ:dbns6D37WWo:-BTjWOF_DHI&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=cWtcQjdVcnQ:dbns6D37WWo:-BTjWOF_DHI&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=cWtcQjdVcnQ:dbns6D37WWo:F7zBnMyn0Lo&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=cWtcQjdVcnQ:dbns6D37WWo:F7zBnMyn0Lo&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=cWtcQjdVcnQ:dbns6D37WWo:V_sGLiPBpWU&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=cWtcQjdVcnQ:dbns6D37WWo:V_sGLiPBpWU&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt;
+				&lt;/div&gt;&lt;img src=&quot;http://feeds.feedburner.com/~r/PythonSoftwareFoundationNews/~4/cWtcQjdVcnQ&quot;
+				height=&quot;1&quot; width=&quot;1&quot; alt=&quot;&quot; /&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 22:42:37 +0000</pubDate>
+		</item>
+		<item>
+			<title>Python Software Foundation: The 2020 Python Language
+				Summit
+			</title>
+			<guid>
+				http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/plH83v899Ww/the-2020-python-language-summit.html
+			</guid>
+			<link>
+				http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/plH83v899Ww/the-2020-python-language-summit.html
+			</link>
+			<description>&lt;div&gt;
+				&lt;div class=&quot;separator&quot;&gt;
+				&lt;a href=&quot;https://1.bp.blogspot.com/-o6MVfNjmAzM/XqHoFu8yv5I/AAAAAAAAE1A/3dzN6tSd25I4Vnib3zDyWG80Lt7o_cEugCLcBGAsYHQ/s1600/rock-python-2.jpg&quot;&gt;&lt;img
+				border=&quot;0&quot; height=&quot;290&quot; src=&quot;https://1.bp.blogspot.com/-o6MVfNjmAzM/XqHoFu8yv5I/AAAAAAAAE1A/3dzN6tSd25I4Vnib3zDyWG80Lt7o_cEugCLcBGAsYHQ/s320/rock-python-2.jpg&quot;
+				width=&quot;320&quot; /&gt;&lt;/a&gt;&lt;/div&gt;
+				&lt;br /&gt;
+				The Python Language Summit is a small gathering of Python
+				language implementers (both the core developers of CPython and
+				alternative Pythons), as well third-party library authors and
+				other Python community members. The summit features short
+				presentations followed by group discussions. In 2020, the
+				Summit was held over two days by videoconference; questions
+				were asked by a combination of voice and chat.&lt;br /&gt;
+				&lt;br /&gt;
+				Summaries of all presentations will be posted here as they are
+				completed.&lt;br /&gt;
+				&lt;br /&gt;
+				Thanks to&amp;nbsp;&lt;a href=&quot;https://mongodb.com/&quot;&gt;MongoDB&lt;/a&gt;&amp;nbsp;for
+				sponsoring the Python Language Summit.&lt;/div&gt;
+				&lt;br /&gt;
+				&lt;hr /&gt;
+				&lt;br /&gt;
+				&lt;h3&gt;
+				Day 1&lt;/h3&gt;
+				&lt;b&gt;&lt;a href=&quot;https://pyfound.blogspot.com/2020/04/all-strings-become-f-strings-python.html&quot;&gt;All
+				Strings Become f-strings&lt;/a&gt;&lt;/b&gt;&lt;br /&gt;
+				Eric V. Smith&lt;br /&gt;
+				&lt;br /&gt;
+				&lt;b&gt;&lt;a href=&quot;https://pyfound.blogspot.com/2020/04/replacing-cpythons-parser-python.html&quot;&gt;Replacing
+				CPython’s Parser with a PEG-based parser&lt;/a&gt;&lt;/b&gt;&lt;br
+				/&gt;
+				Pablo Galindo, Lysandros Nikolaou, Guido van Rossum&lt;br /&gt;
+				&lt;br /&gt;
+				&lt;b&gt;&lt;a href=&quot;https://pyfound.blogspot.com/2020/04/a-formal-specification-for-cpython.html&quot;&gt;A
+				Formal Specification for the (C)Python Virtual Machine&lt;/a&gt;&lt;/b&gt;&lt;br
+				/&gt;
+				Mark Shannon&lt;br /&gt;
+				&lt;br /&gt;
+				&lt;b&gt;&lt;a href=&quot;https://pyfound.blogspot.com/2020/04/hpy-future-proof-way-of-extending.html&quot;&gt;HPy:
+				a Future-Proof Way of Extending Python?&lt;/a&gt;&lt;/b&gt;&lt;br
+				/&gt;
+				Antonio Cuni&lt;br /&gt;
+				&lt;br /&gt;
+				&lt;b&gt;&lt;a href=&quot;https://pyfound.blogspot.com/2020/04/cpython-documentation-next-5-years.html&quot;&gt;CPython
+				Documentation: The Next 5 Years&lt;/a&gt;&lt;/b&gt;&lt;br /&gt;
+				Carol Willing, Ned Batchelder&lt;br /&gt;
+				&lt;div&gt;
+				&lt;br /&gt;
+				&lt;hr /&gt;
+				&lt;br /&gt;
+				&lt;h3&gt;
+				Day 2&lt;/h3&gt;
+				&lt;br /&gt;
+				&lt;b&gt;&lt;a href=&quot;https://pyfound.blogspot.com/2020/04/lightning-talks-part-1.html&quot;&gt;Lightning
+				talks (pre-selected)&lt;/a&gt;&lt;/b&gt;&lt;br /&gt;
+				&lt;br /&gt;
+				&lt;b&gt;&lt;a href=&quot;https://pyfound.blogspot.com/2020/04/the-path-forward-for-typing-python.html&quot;&gt;The
+				Path Forward for Typing&lt;/a&gt;&lt;/b&gt;&lt;br /&gt;
+				Guido van Rossum&lt;br /&gt;
+				&lt;br /&gt;
+				&lt;b&gt;Property-Based Testing for Python Builtins and the
+				Standard Library&lt;/b&gt;&lt;br /&gt;
+				Zac Hatfield-Dodds&lt;br /&gt;
+				&lt;br /&gt;
+				&lt;b&gt;Core Workflow Updates&lt;/b&gt;&lt;br /&gt;
+				Mariatta Wijaya&lt;br /&gt;
+				&lt;br /&gt;
+				&lt;b&gt;CPython on Mobile Platforms&lt;/b&gt;&lt;br /&gt;
+				Russell Keith-Magee&lt;br /&gt;
+				&lt;br /&gt;
+				&lt;b&gt;Lighting talks (sign-up during the summit)&lt;/b&gt;&lt;br
+				/&gt;
+				&lt;b&gt;&lt;br /&gt;
+				&lt;/b&gt;&lt;/div&gt;
+				&lt;br /&gt;
+				&lt;hr /&gt;
+				&lt;br /&gt;
+				&lt;i&gt;Image: &lt;a href=&quot;https://www.oldbookillustrations.com/illustrations/natal-rock-python/&quot;&gt;Natal
+				Rock Python&lt;/a&gt;&lt;/i&gt;&lt;div class=&quot;feedflare&quot;&gt;
+				&lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=plH83v899Ww:-tTvdO6Ec6k:yIl2AUoC8zA&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?d=yIl2AUoC8zA&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=plH83v899Ww:-tTvdO6Ec6k:-BTjWOF_DHI&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=plH83v899Ww:-tTvdO6Ec6k:-BTjWOF_DHI&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=plH83v899Ww:-tTvdO6Ec6k:F7zBnMyn0Lo&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=plH83v899Ww:-tTvdO6Ec6k:F7zBnMyn0Lo&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=plH83v899Ww:-tTvdO6Ec6k:V_sGLiPBpWU&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=plH83v899Ww:-tTvdO6Ec6k:V_sGLiPBpWU&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt;
+				&lt;/div&gt;&lt;img src=&quot;http://feeds.feedburner.com/~r/PythonSoftwareFoundationNews/~4/plH83v899Ww&quot;
+				height=&quot;1&quot; width=&quot;1&quot; alt=&quot;&quot; /&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 22:37:42 +0000</pubDate>
+		</item>
+		<item>
+			<title>Python Software Foundation: The path forward for typing -
+				Python Language Summit 2020
+			</title>
+			<guid>
+				http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/mhsrkLT8iYQ/the-path-forward-for-typing-python.html
+			</guid>
+			<link>
+				http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/mhsrkLT8iYQ/the-path-forward-for-typing-python.html
+			</link>
+			<description>&lt;a href=&quot;http://3.bp.blogspot.com/-eY0SsOgC6QM/XquJJV6Es6I/AAAAAAAAE38/UiZeeR9bDao3uXtL_8Hp8-Xed5--bKscwCK4BGAYYCw/s1600/guido-headshot-2019.jpg&quot;&gt;&lt;img
+				border=&quot;0&quot; src=&quot;https://3.bp.blogspot.com/-eY0SsOgC6QM/XquJJV6Es6I/AAAAAAAAE38/UiZeeR9bDao3uXtL_8Hp8-Xed5--bKscwCK4BGAYYCw/s1600/guido-headshot-2019.jpg&quot;
+				/&gt;&lt;/a&gt;&lt;p&gt;&quot;There are a &lt;em&gt;lot&lt;/em&gt;
+				of PEPs about typing!&quot; said Guido van Rossum at the
+				Language Summit. Since 2014 there have been ten PEPs approved
+				for Python's type-checking features. Two of them have been
+				approved already this year: the relatively &quot;esoteric&quot;
+				&lt;a href=&quot;https://www.python.org/dev/peps/pep-0613/&quot;&gt;PEP
+				613: Explicit Type Aliases&lt;/a&gt;, and another that will
+				have widespread impact, &lt;a href=&quot;https://www.python.org/dev/peps/pep-0585/&quot;&gt;PEP
+				585: Type Hinting Generics In Standard Collections&lt;/a&gt;,
+				written by Łukasz Langa and mainly implemented by Van Rossum.
+				Thanks to this PEP, types which had been defined like &lt;code&gt;List[int]&lt;/code&gt;
+				can now be spelled &lt;code&gt;list[int]&lt;/code&gt;, with a
+				lowercase &quot;L&quot;. As Van Rossum told the Python Language
+				Summit, &quot;We want to avoid a world where users have to
+				remember, 'Here I have to use a capital-L &lt;code&gt;List&lt;/code&gt;
+				and here I use a lowercase-L &lt;code&gt;list&lt;/code&gt;.'&quot;&lt;br
+				/&gt;
+				&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://pyfound.blogspot.com/2020/04/the-2020-python-language-summit.html&quot;&gt;Read
+				more 2020 Python Language Summit coverage&lt;/a&gt;.&lt;br /&gt;
+				&lt;/p&gt;&lt;p&gt;&lt;hr /&gt;&lt;/p&gt;&lt;p&gt;A &quot;generic&quot;
+				is a type that can be parameterized with other types. Generics
+				are usually container types. Since Python 3.5, the &lt;code&gt;typing&lt;/code&gt;
+				module has provided &quot;type aliases&quot; like &lt;code&gt;List&lt;/code&gt;,
+				which can be parametrized with the type of values it contains,
+				like &lt;code&gt;List[str]&lt;/code&gt; in this type-annotated
+				function definition:&lt;br /&gt;
+				&lt;/p&gt;&lt;pre&gt;from typing import List
+				def greet_all(names: List[str]) -&gt; None:
+				for name in names:
+				print(&quot;Hello&quot;, name)
+				&lt;/pre&gt;&lt;p&gt;Van Rossum showed the Summit the following
+				code, demonstrating that the ordinary built-in &lt;code&gt;list&lt;/code&gt;
+				and &lt;code&gt;dict&lt;/code&gt; classes can now be used as
+				generics for type annotations:&lt;br /&gt;
+				&lt;/p&gt;&lt;pre&gt;&gt;&gt;&gt; p = list[int]
+				&gt;&gt;&gt; p
+				list[int]
+				&gt;&gt;&gt; p.__origin__
+				&amp;lt;class 'list'&gt;
+				&gt;&gt;&gt; p.__args__
+				(&amp;lt;class 'int'&gt;,)
+				&gt;&gt;&gt; p((1, 2, 3))
+				[1, 2, 3]
+				&gt;&gt;&gt; from typing import TypeVar; T = TypeVar(&quot;T&quot;)
+				&gt;&gt;&gt; dict[str, T][int]
+				Dict[str, int]
+				&lt;/pre&gt;&lt;p&gt;The syntax &lt;code&gt;list[int]&lt;/code&gt;
+				is enabled by implementing &lt;code&gt;&lt;a href=&quot;https://docs.python.org/3.8/reference/datamodel.html#object.__class_getitem__&quot;&gt;__class_getitem__&lt;/a&gt;&lt;/code&gt;
+				on &lt;code&gt;list&lt;/code&gt;. The built-in containers such
+				as &lt;code&gt;tuple&lt;/code&gt;, &lt;code&gt;dict&lt;/code&gt;,
+				&lt;code&gt;list&lt;/code&gt; and &lt;code&gt;set&lt;/code&gt;
+				are supported, along with some standard library containers and
+				abstract base classes, including &lt;code&gt;collections.deque&lt;/code&gt;,
+				&lt;code&gt;collections.abc.Iterable&lt;/code&gt;, &lt;code&gt;queue.Queue&lt;/code&gt;,
+				and &lt;code&gt;re.Pattern&lt;/code&gt;. The effect for
+				everyday coders is mainly a matter of spelling, yet as Van
+				Rossum said, &quot;It's probably going to affect everyone's
+				code, or everyone will encounter code like this.&quot; Fewer
+				users will have to import type aliases such as &lt;code&gt;List&lt;/code&gt;
+				from the &lt;code&gt;&lt;a href=&quot;https://docs.python.org/3.8/library/typing.html&quot;&gt;typing&lt;/a&gt;&lt;/code&gt;
+				module; it will be required only for advanced annotations. Van
+				Rossum asked the Summit, &quot;How much of this do we want to
+				make built in?&quot;&lt;br /&gt;
+				&lt;p&gt;Python's approach to type-checking is to add type &lt;em&gt;annotations&lt;/em&gt;
+				in the source code, but to check types neither during
+				compilation nor at runtime. Instead, programmers use a separate
+				type-checker (such as &lt;a href=&quot;http://mypy-lang.org/&quot;&gt;mypy&lt;/a&gt;
+				or &lt;a href=&quot;https://www.jetbrains.com/pycharm/&quot;&gt;PyCharm&lt;/a&gt;).
+				The new PEP 585 type annotations are the same: they do no
+				checking at all, so &quot;nonsense&quot; annotations like &lt;code&gt;list[str,
+				str]&lt;/code&gt; are permitted. It is the type checker's job
+				to reject them.&lt;br /&gt;
+				&lt;/p&gt;&lt;p&gt;Annotations are not completely free at
+				runtime, however: by default an annotation like &lt;code&gt;List[int]&lt;/code&gt;
+				is evaluated to create a type object when it is encountered,
+				usually at module-load time. This can noticeably hurt startup
+				times for big type-annotated programs. &lt;a href=&quot;https://www.python.org/dev/peps/pep-0563/&quot;&gt;PEP
+				563 Postponed Evaluation of Annotations&lt;/a&gt; was
+				introduced in Python 3.7 to solve this problem: type
+				annotations are saved as strings, and evaluated only when a
+				type checker such as mypy requests it. This optimization is
+				currently guarded behind &lt;code&gt;from __future__ import
+				annotations&lt;/code&gt;. Van Rossum asked whether postponed
+				evaluation should become the default in Python 3.9, which will
+				be released imminently, or 3.10.&lt;br /&gt;
+				&lt;/p&gt;&lt;p&gt;Also in Python 3.10 will be &lt;a href=&quot;https://www.python.org/dev/peps/pep-0604/&quot;&gt;PEP
+				604&lt;/a&gt;, which permits the current &lt;code&gt;Union[t1,
+				t2]&lt;/code&gt; annotation to be spelled as &lt;code&gt;t1 |
+				t2&lt;/code&gt;, using the vertical bar to express a union of
+				types. The PEP's scope might expand to add syntax that even
+				programs without type annotations would enjoy. For example,
+				&lt;code&gt;isinstance(x, (t1, t2))&lt;/code&gt; could be
+				written &lt;code&gt;isinstance(x, t1 | t2)&lt;/code&gt;, and an
+				exception handler could be written like &lt;code&gt;except t1 |
+				t2&lt;/code&gt;.&lt;br /&gt;
+				&lt;/p&gt;&lt;p&gt;Yury Selivanov noted that &lt;code&gt;typing.Optional[t]&lt;/code&gt;
+				could be replaced with &lt;code&gt;t | None&lt;/code&gt;, and
+				asked whether it could be shortened further as &lt;code&gt;t?&lt;/code&gt;.
+				&quot;Every year,&quot; replied Van Rossum, &quot;there's
+				another feature that people want to use the question mark for.&quot;
+				In his opinion, &lt;code&gt;t | None&lt;/code&gt; is convenient
+				enough, and another syntax would be redundant. (Although the
+				new PEG parser would make it easy to implement.)&lt;br /&gt;
+				&lt;/p&gt;&lt;p&gt;Stéphane Wirtel asked if Python would ever
+				have exception annotations. &quot;Ouch!&quot; said Van Rossum.
+				The consensus is that Java's checked exceptions were a bad
+				idea, and would probably be bad in Python too. &quot;I don't
+				think I have the stomach for that.&quot;&lt;br /&gt;
+				&lt;/p&gt;&lt;p&gt;The standard library and most PyPI packages
+				have no type annotations. Type-hinted &quot;package stubs&quot;
+				for this code are hosted in the &lt;a href=&quot;https://github.com/python/typeshed&quot;&gt;typeshed&lt;/a&gt;
+				repository, but storing all those stubs in a monolithic
+				distribution doesn't scale, and the problem will grow worse. In
+				a &lt;a href=&quot;https://github.com/python/typeshed/issues/2491#issuecomment-611607557&quot;&gt;GitHub
+				issue thread&lt;/a&gt;, Jukka Lehtosalo predicted that in two
+				years, stubs for third-party packages will outnumber those for
+				the standard library, and in five years, typeshed will include
+				more than 1000 third-party packages. As Van Rossum told the
+				Language Summit, Lehtosalo's proposal will split typeshed into
+				separate distributions so users can easily download just the
+				stubs they need, consistent with &lt;a href=&quot;https://www.python.org/dev/peps/pep-0561/&quot;&gt;PEP
+				561&lt;/a&gt;.&lt;br /&gt;
+				&lt;/p&gt;&lt;p&gt;Brett Cannon asked whether the standard
+				library's annotations should be shipped with Python, either as
+				stub files or in the code itself. Van Rossum said new stdlib
+				code should be written with annotations inline, but old code
+				includes optimizations and strange legacy behaviors that defy
+				static typing. Currently mypy does not analyze standard library
+				code because &quot;it assumes that the standard library is full
+				of untyped shit,&quot; it looks in typeshed instead. If
+				indigenous type annotations grew in the standard library, the
+				core team would have to coordinate with type checker authors to
+				manage the change.&lt;br /&gt;
+				&lt;/p&gt;&lt;p&gt;Van Rossum offered an update on mypy. He
+				admitted he hadn't been active on mypy recently, and &quot;my
+				former colleagues at Dropbox have not been able to make as much
+				progress as we did in the past.&quot; Support for NumPy is
+				stalled. The same goes for decorators, although once &lt;a
+				href=&quot;https://www.python.org/dev/peps/pep-0612/&quot;&gt;PEP
+				612&lt;/a&gt; is approved it will provide a prerequisite for
+				decorator support in mypy. Raymond Hettinger asked if mypy
+				development needs funding. Michael Sullivan, a mypy contributor
+				from Dropbox, replied that Dropbox considers mypy mostly
+				complete, and has moved on to projects like their Python 3
+				migration. Van Rossum said funding could help. Personally he
+				has &quot;moved on to retirement.&quot; The Python static
+				typing mailing list is quieter than Van Rossum would like, &lt;a
+				href=&quot;https://mail.python.org/mailman3/lists/typing-sig.python.org/&quot;&gt;interested
+				people should join&lt;/a&gt;.&lt;br /&gt;
+				&lt;/p&gt;&lt;p&gt;There's better news about &lt;a href=&quot;https://github.com/python/mypy/tree/master/mypyc&quot;&gt;mypyc&lt;/a&gt;,
+				an experimental project to translate type-annotated Python into
+				C. The translator's main use for now is converting mypy to C
+				for speed. There is work in progress to allow a mix of Python
+				and Python-translated-to-C in the same program, and to write
+				documentation. The mypyc project expects a &lt;a href=&quot;https://summerofcode.withgoogle.com/&quot;&gt;Google
+				Summer of Code&lt;/a&gt; student this summer.&lt;br /&gt;
+				&lt;/p&gt;&lt;div class=&quot;feedflare&quot;&gt;
+				&lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=mhsrkLT8iYQ:gcf8Ls2pwPU:yIl2AUoC8zA&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?d=yIl2AUoC8zA&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=mhsrkLT8iYQ:gcf8Ls2pwPU:-BTjWOF_DHI&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=mhsrkLT8iYQ:gcf8Ls2pwPU:-BTjWOF_DHI&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=mhsrkLT8iYQ:gcf8Ls2pwPU:F7zBnMyn0Lo&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=mhsrkLT8iYQ:gcf8Ls2pwPU:F7zBnMyn0Lo&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=mhsrkLT8iYQ:gcf8Ls2pwPU:V_sGLiPBpWU&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=mhsrkLT8iYQ:gcf8Ls2pwPU:V_sGLiPBpWU&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt;
+				&lt;/div&gt;&lt;img src=&quot;http://feeds.feedburner.com/~r/PythonSoftwareFoundationNews/~4/mhsrkLT8iYQ&quot;
+				height=&quot;1&quot; width=&quot;1&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 22:37:15 +0000</pubDate>
+		</item>
+		<item>
+			<title>Python Software Foundation: CPython Documentation: The Next
+				5 Years - Python Language Summit 2020
+			</title>
+			<guid>
+				http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/xth3kCshi2A/cpython-documentation-next-5-years.html
+			</guid>
+			<link>
+				http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/xth3kCshi2A/cpython-documentation-next-5-years.html
+			</link>
+			<description>&lt;a href=&quot;http://1.bp.blogspot.com/-U9iriH-HKfg/XquIZ1DENMI/AAAAAAAAE3k/9a9jBUnMseYB6nSjA3Sz3io6A7ZT3t4lwCK4BGAYYCw/s1600/carol-willing-and-ned-batchelder.jpg&quot;&gt;&lt;img
+				border=&quot;0&quot; src=&quot;https://1.bp.blogspot.com/-U9iriH-HKfg/XquIZ1DENMI/AAAAAAAAE3k/9a9jBUnMseYB6nSjA3Sz3io6A7ZT3t4lwCK4BGAYYCw/s1600/carol-willing-and-ned-batchelder.jpg&quot;
+				/&gt;&lt;/a&gt;&lt;br /&gt;
+				&lt;p&gt;&quot;Documentation is the way we communicate with
+				each other,&quot; said Willing. &quot;Historically, we've done
+				a great job with documentation.&quot; But the environment is
+				changing: Python's BDFL has retired, and Python's user base is
+				expanding, becoming more global, and moving away (to some
+				degree) from lower-level programming to higher-level
+				applications. These changes impose new documentation burdens on
+				the small core team. Willing said, &quot;We don't scale well.&quot;&lt;br
+				/&gt;
+				&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://pyfound.blogspot.com/2020/04/the-2020-python-language-summit.html&quot;&gt;Read
+				more 2020 Python Language Summit coverage&lt;/a&gt;.&lt;br /&gt;
+				&lt;/p&gt;&lt;hr /&gt;&lt;p&gt;Willing and Ned Batchelder
+				proposed a new &lt;a href=&quot;https://www.python.org/dev/peps/pep-0013/&quot;&gt;Python
+				Steering Council&lt;/a&gt; workgroup called the &quot;Documentation
+				Editorial Board&quot;. Its members would include core
+				developers and community members; they would write style
+				guides, manage translations into non-English languages, and
+				create a landing page that guides different kinds of users to
+				the documentation that suits them. (Daniele Procida had shared
+				earlier &lt;a href=&quot;https://documentation.divio.com/&quot;&gt;a
+				guide to writing docs&lt;/a&gt; for a variety of users' needs.)
+				The core team need not write all the docs themselves—they
+				should be owned and written by the community, along with the
+				core team, overseen by the new Editorial Board.&lt;br /&gt;
+				&lt;/p&gt;&lt;p&gt;In the Editorial Board's first year it would
+				focus on governance, translations, the new landing page, and
+				tutorials. Willing was inspired by the core team's &lt;a href=&quot;https://bugs.python.org/issue33649&quot;&gt;overhaul
+				of the asyncio docs&lt;/a&gt;; they added tutorials and split
+				the high-level information from the low-level. The rest of the
+				standard library would serve users better with more tutorials
+				like asyncio's. Style guides would ensure consistency and best
+				practices. As Ned Batchelder pointed out, Python has two PEPs
+				for code style (&lt;a href=&quot;https://www.python.org/dev/peps/pep-0007/&quot;&gt;one
+				for C&lt;/a&gt; and &lt;a href=&quot;https://www.python.org/dev/peps/pep-0008/&quot;&gt;one
+				for Python&lt;/a&gt;), but none for documentation.&lt;br /&gt;
+				&lt;/p&gt;&lt;p&gt;In its second year, the Board would measure
+				its effectiveness so far, and begin running documentation
+				sprints. Willing recommends the Board begin annual editorial
+				reviews, seeking patterns of user confusion: &quot;When users
+				ask questions on mailing lists and the bug tracker, it means
+				something's not clear to them.&quot; Updating the documentation
+				to fix common misunderstandings would save time in the long run
+				for users and the core team.&lt;br /&gt;
+				&lt;/p&gt;&lt;p&gt;Batchelder observed that &quot;twenty-five
+				years ago, our main audience seemed to be refugees from C,&quot;
+				but most readers of the Python docs today are not career
+				software developers at all; they need different docs.&lt;br /&gt;
+				&lt;/p&gt;&lt;p&gt;Raymond Hettinger asked, &quot;Any thoughts
+				on why no one stepped up to write &lt;strong&gt;any&lt;/strong&gt;
+				docs for the &lt;a href=&quot;https://www.python.org/dev/peps/pep-0572/&quot;&gt;walrus
+				operator&lt;/a&gt;? I'm not seeing people volunteering for
+				major documentation efforts. Mostly the contributions are
+				minor, micro edits.&quot; Willing replied that the walrus
+				operator specifically was a &quot;hot potato&quot; that
+				deterred volunteers. In general, the Python core team doesn't
+				encourage others to lead big documentation projects; community
+				members don't have a sense of ownership over the docs, nor the
+				authority to merge their changes, so skilled writers take their
+				efforts elsewhere. The proposed new Editorial Board would help
+				to change that.&lt;br /&gt;
+				&lt;/p&gt;&lt;p&gt;Sumana Harihareswara asked how documentation
+				work would be funded, and whether professional technical
+				writers might be involved. Willing replied that the PSF will
+				fund some work, but she emphasized recruiting volunteers from
+				the community. Several in the audience asked about making a
+				&quot;core documenter&quot; role analogous to &quot;core
+				developer&quot;; Batchelder replied that fine-grained roles and
+				permissions in open source projects are counterproductive.
+				People who write excellent documentation should simply be
+				promoted to core developers.&lt;br /&gt;
+				&lt;/p&gt;&lt;div class=&quot;feedflare&quot;&gt;
+				&lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=xth3kCshi2A:EQjr7p_TBQs:yIl2AUoC8zA&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?d=yIl2AUoC8zA&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=xth3kCshi2A:EQjr7p_TBQs:-BTjWOF_DHI&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=xth3kCshi2A:EQjr7p_TBQs:-BTjWOF_DHI&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=xth3kCshi2A:EQjr7p_TBQs:F7zBnMyn0Lo&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=xth3kCshi2A:EQjr7p_TBQs:F7zBnMyn0Lo&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=xth3kCshi2A:EQjr7p_TBQs:V_sGLiPBpWU&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=xth3kCshi2A:EQjr7p_TBQs:V_sGLiPBpWU&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt;
+				&lt;/div&gt;&lt;img src=&quot;http://feeds.feedburner.com/~r/PythonSoftwareFoundationNews/~4/xth3kCshi2A&quot;
+				height=&quot;1&quot; width=&quot;1&quot; alt=&quot;&quot; /&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 22:36:56 +0000</pubDate>
+		</item>
+		<item>
+			<title>Python Software Foundation: HPy: a future-proof way of
+				extending Python? - Python Language Summit 2020
+			</title>
+			<guid>
+				http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/tqB5KKpWKMs/hpy-future-proof-way-of-extending.html
+			</guid>
+			<link>
+				http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/tqB5KKpWKMs/hpy-future-proof-way-of-extending.html
+			</link>
+			<description>&lt;a href=&quot;http://4.bp.blogspot.com/-D2smH9TS7pA/XquHnKg-VlI/AAAAAAAAE3Y/4mGOWmhFNlMrkCQsHg9n45il-yxlFAKAgCK4BGAYYCw/s1600/antonio-cuni.jpeg&quot;&gt;&lt;img
+				border=&quot;0&quot; src=&quot;https://4.bp.blogspot.com/-D2smH9TS7pA/XquHnKg-VlI/AAAAAAAAE3Y/4mGOWmhFNlMrkCQsHg9n45il-yxlFAKAgCK4BGAYYCw/s1600/antonio-cuni.jpeg&quot;
+				/&gt;&lt;/a&gt;&lt;br /&gt;
+				Antonio Cuni presented &lt;a href=&quot;https://github.com/pyhandle/hpy&quot;&gt;HPy&lt;/a&gt;
+				(pronounced &quot;aitch pi&quot;), an attempt at a replacement
+				C API that is compatible and performant across several
+				interpreter implementations. The idea was born at EuroPython
+				last year from a discussion among CPython, PyPy, and Cython
+				developers.&lt;br /&gt;
+				&lt;br /&gt;
+				&lt;a href=&quot;https://pyfound.blogspot.com/2020/04/the-2020-python-language-summit.html&quot;&gt;Read
+				more 2020 Python Language Summit coverage.&lt;/a&gt;&lt;br /&gt;
+				&lt;hr /&gt;CPython's API for C extensions is tightly coupled
+				with the interpreter's internals. Another interpreter such as
+				Jython, if it wants to support the same C extensions, must
+				emulate these internals, pretending to the C extension that the
+				interpreter works the same as CPython. Even CPython suffers:
+				any of its internals that are exposed in the C API can't be
+				improved without breaking compatibility. Python objects in the
+				C API are pointers to CPython's PyObject structs, whose
+				internal layout is partly exposed to extensions. Extensions
+				expect each PyObject pointer to be constant for the object's
+				lifetime, which prevents a memory manager like PyPy's from &lt;a
+				href=&quot;https://doc.pypy.org/en/latest/gc_info.html&quot;&gt;moving
+				objects during garbage collection&lt;/a&gt;.&lt;br /&gt;
+				&lt;br /&gt;
+				Most prominently, the C API requires extensions to control
+				objects' lifetimes by incrementing and decrementing their
+				reference counts. Any Python implementation that does &lt;em&gt;not&lt;/em&gt;
+				have a reference-counting memory manager, such as PyPy, &lt;a
+				href=&quot;https://morepypy.blogspot.com/2018/09/inside-cpyext-why-emulating-cpython-c.html&quot;&gt;must
+				emulate refcounts for the sake of the C API&lt;/a&gt;. Cuni
+				calls this a &quot;massive amount of precious developer hours
+				wasted,&quot; an impediment to performance, and the main
+				obstacle for Larry Hastings's &lt;a href=&quot;https://lwn.net/Articles/754577/&quot;&gt;GILectomy&lt;/a&gt;.&lt;br
+				/&gt;
+				&lt;br /&gt;
+				Victor Stinner has already &lt;a href=&quot;https://pythoncapi.readthedocs.io/&quot;&gt;outlined
+				the design for a better C API&lt;/a&gt; that hides some
+				internals, but still depends on reference-counting; Cuni
+				confronts the same questions and gives a more radical answer.&lt;br
+				/&gt;
+				&lt;br /&gt;
+				HPy is a new C API that is interpreter-agnostic. Instead of
+				PyObject pointers, HPy presents &lt;em&gt;handles&lt;/em&gt;
+				(hence the &quot;H&quot; in its name). Where a C API user would
+				incref a PyObject when copying a reference to it, an HPy user
+				would &lt;em&gt;duplicate&lt;/em&gt; a handle. Each handle is
+				distinct and must be closed independently. Cuni showed this
+				code example:&lt;br /&gt;
+				&lt;pre&gt;/* C API */
+				PyObject *a = PyLong_FromLong(42);
+				PyObject *b = a;
+				Py_INCREF(b);
+				Py_DECREF(a);
+				Py_DECREF(a); // Ok
+				/* HPy */
+				HPy a = HPyLong_FromLong(ctx, 42);
+				HPy b = HPy_Dup(ctx, a);
+				HPy_Close(a);
+				HPy_Close(a); // WRONG!
+				&lt;/pre&gt;Handles are HPy's basic departure from the C API.
+				The independence of handles' liftimes, said Cuni, decouples HPy
+				from CPython's ref-counting memory manager, and makes HPy a
+				natural, fast C interface for other Pythons. PyPy, for example,
+				will maintain a map of handles to objects; when its garbage
+				collector moves objects in memory, it only needs to update the
+				map. Handles permit precise debugging: if a handle is leaked,
+				HPy prints the line number where it was created. (The HPy
+				context parameter &lt;code&gt;ctx&lt;/code&gt; that is passed
+				everywhere allows for subinterpreters, and perhaps other
+				features in the future.)&lt;br /&gt;
+				&lt;br /&gt;
+				Brett Cannon asked whether HPy will be a minimalist API for
+				extension development, or if it will include specialized APIs
+				for speed. For example, the current C API has a generic &lt;code&gt;PyObject_GetItem&lt;/code&gt;,
+				and a fast &lt;code&gt;PyDict_GetItem&lt;/code&gt; specialized
+				for dicts. Cuni said he prefers a smaller API, but benchmarks
+				would guide him.&lt;br /&gt;
+				&lt;br /&gt;
+				Cannon asked whether a tool could semi-automatically port C
+				code from the C API to HPy. It could not, according to Cuni,
+				because the problem of closing each handle exactly once must be
+				solved carefully by a human. HPy's debug messages will be a
+				great help. &quot;In theory,&quot; Cuni said, &quot;it should
+				be as easy as adding an 'H' to all C API calls, renaming &lt;code&gt;Py_INCREF&lt;/code&gt;
+				to &lt;code&gt;HPy_Dup&lt;/code&gt;, putting &lt;code&gt;HPy_Close&lt;/code&gt;
+				here and there, and then see if the debug mode is happy or
+				complains.&quot;&lt;br /&gt;
+				&lt;br /&gt;
+				Victor Stinner asked whether his &lt;a href=&quot;https://github.com/vstinner/misc/blob/master/cpython/pep-opaque-c-api.rst&quot;&gt;draft
+				proposal to incrementally modify the C API to hide internals&lt;/a&gt;
+				would eventually solve PyPy's problems with C extensions. Cuni
+				replied, &quot;It's not enough for PyPy because of reference
+				counting and the fact that &lt;code&gt;PyObject*&lt;/code&gt;
+				is not a good representation for objects that can move in
+				memory.&quot; But he acknowledged that Stinner's proposal goes
+				in the right direction.&lt;br /&gt;
+				&lt;br /&gt;
+				Cuni said the &quot;HPy strategy to conquer the world&quot; is
+				to create a zero-overhead façade that maps HPy to the C API
+				(using compile-time macros), then port third-party C extensions
+				to pure HPy, one function at a time. It must be faster on
+				alternative implementations than their existing C API
+				emulations; &lt;a href=&quot;https://morepypy.blogspot.com/2019/12/hpy-kick-off-sprint-report.html&quot;&gt;early
+				benchmarks show a 3x speedup on PyPy&lt;/a&gt; and 2x on &lt;a
+				href=&quot;https://github.com/graalvm/graalpython&quot;&gt;GraalPython&lt;/a&gt;,
+				a JVM-based Python.&lt;br /&gt;
+				&lt;br /&gt;
+				&lt;a href=&quot;https://hpy.readthedocs.io/en/latest/overview.html#current-status-and-roadmap&quot;&gt;HPy
+				is currently missing type objects&lt;/a&gt;, but Cuni said it
+				&quot;basically works.&quot; An HPy extension can be compiled
+				to the CPython ABI or to an &quot;HPy universal ABI&quot; that
+				allows the same compiled extension to work with multiple
+				interpreters. In the future, a new Cython backend will target
+				HPy instead of the C API. Cuni and his collaborators have
+				ported &lt;a href=&quot;https://pypi.org/project/ujson/&quot;&gt;ujson&lt;/a&gt;
+				to HPy; they plan to port &lt;a href=&quot;https://github.com/paugier/piconumpy&quot;&gt;a
+				subset of NumPy&lt;/a&gt; next, and eventually to write a PEP
+				and merge HPy into the official CPython distribution, where it
+				will live alongside the existing C API. Cuni hopes the core
+				developers will endorse HPy for third-party C extension
+				development; in a &quot;hypothetical sci-fi future&quot;
+				CPython might port its standard library C modules to HPy.&lt;br
+				/&gt;
+				&lt;div class=&quot;feedflare&quot;&gt;
+				&lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=tqB5KKpWKMs:qhEZi_t_KUQ:yIl2AUoC8zA&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?d=yIl2AUoC8zA&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=tqB5KKpWKMs:qhEZi_t_KUQ:-BTjWOF_DHI&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=tqB5KKpWKMs:qhEZi_t_KUQ:-BTjWOF_DHI&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=tqB5KKpWKMs:qhEZi_t_KUQ:F7zBnMyn0Lo&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=tqB5KKpWKMs:qhEZi_t_KUQ:F7zBnMyn0Lo&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=tqB5KKpWKMs:qhEZi_t_KUQ:V_sGLiPBpWU&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=tqB5KKpWKMs:qhEZi_t_KUQ:V_sGLiPBpWU&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt;
+				&lt;/div&gt;&lt;img src=&quot;http://feeds.feedburner.com/~r/PythonSoftwareFoundationNews/~4/tqB5KKpWKMs&quot;
+				height=&quot;1&quot; width=&quot;1&quot; alt=&quot;&quot; /&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 22:36:47 +0000</pubDate>
+		</item>
+		<item>
+			<title>Python Software Foundation: A formal specification for the
+				(C)Python virtual machine - Python Language Summit 2020
+			</title>
+			<guid>
+				http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/8LqjIAwXjDE/a-formal-specification-for-cpython.html
+			</guid>
+			<link>
+				http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/8LqjIAwXjDE/a-formal-specification-for-cpython.html
+			</link>
+			<description>&lt;a href=&quot;http://3.bp.blogspot.com/-K-vR51SWHgA/XquHApRHCkI/AAAAAAAAE3M/_hsDLET_0qMHBN9b1jEQQh84YtJAmEiEQCK4BGAYYCw/s1600/mark-shannon.jpg&quot;&gt;&lt;img
+				border=&quot;0&quot; src=&quot;https://3.bp.blogspot.com/-K-vR51SWHgA/XquHApRHCkI/AAAAAAAAE3M/_hsDLET_0qMHBN9b1jEQQh84YtJAmEiEQCK4BGAYYCw/s1600/mark-shannon.jpg&quot;
+				/&gt;&lt;/a&gt;&lt;br /&gt;
+				Mark Shannon began his presentation saying, &quot;This should
+				actually be titled A &lt;i&gt;Semi&lt;/i&gt;-Formal
+				Specification. I don't think we'll ever get to &lt;a href=&quot;http://www.scholarpedia.org/article/Standard_ML_language#Language_definition&quot;&gt;the
+				stage of ML&lt;/a&gt;,&quot; a language described with
+				mathematical rigor. However, a &lt;em&gt;more&lt;/em&gt; formal
+				definition of Python would be useful. Authors of alternative
+				Python implementations would have a standard to go by, besides
+				reading CPython's source and testing for equivalent behavior on
+				a variety of programs. &quot;It seems to work for Java so I
+				don't see why it wouldn't work for Python,&quot; said Shannon.
+				It would be particularly helpful for anyone who wants to
+				examine a part of the language. Today, one cannot understand
+				CPython's bytecode interpreter without studying all its quirky
+				interactions with the C API, the code loader, and so on; a
+				Python specification would break down the language into domains
+				that could be grasped separately.&lt;br /&gt;
+				&lt;br /&gt;
+				A specification would clean up edge cases. Shannon said there
+				are &quot;too many weird bugs relating to interactions of
+				threads and generators and locals and various other bits and
+				pieces.&quot; If the language were defined, developers would at
+				least know how it's supposed to behave.&lt;br /&gt;
+				&lt;br /&gt;
+				&lt;a href=&quot;https://pyfound.blogspot.com/2020/04/the-2020-python-language-summit.html&quot;&gt;Read
+				more 2020 Python Language Summit coverage&lt;/a&gt;.&lt;br /&gt;
+				&lt;hr /&gt;Shannon proposed to split Python's specifications
+				into major components: code loading (including imports and
+				parsing), execution, and the C API. The components' specs would
+				be allowed to refer to each other, but only at a high level. In
+				his Language Summit presentation, Shannon focused on the
+				execution component.&lt;br /&gt;
+				&lt;br /&gt;
+				A Python execution spec would define the virtual machine (VM)
+				as a set of variables, such as the list of threads and their
+				call stacks, and it would define small steps that transition
+				from one VM state to the next. For example, a Python function
+				call involves these steps:&lt;br /&gt;
+				&lt;ul&gt;&lt;li&gt;Create a new stack frame&lt;br /&gt;
+				&lt;/li&gt;
+				&lt;li&gt;Move arguments from current frame to the new one&lt;br
+				/&gt;
+				&lt;/li&gt;
+				&lt;li&gt;Save the next instruction pointer&lt;br /&gt;
+				&lt;/li&gt;
+				&lt;li&gt;Push the new frame onto the call stack&lt;br /&gt;
+				&lt;/li&gt;
+				&lt;li&gt;Continue&lt;/li&gt;
+				&lt;/ul&gt;Every definition ends with &quot;continue&quot;,
+				meaning that the interpreter proceeds to the next step. &lt;br
+				/&gt;
+				Writing a specification for Python is a chance to rethink how
+				its parts relate. CPython's generators are implemented in terms
+				of iterators, because iterators were built first. But
+				generators are a more basic and flexible concept; starting from
+				scratch it's natural to &lt;em&gt;define&lt;/em&gt; iterators
+				in terms of generators. Shannon presented &lt;a href=&quot;https://github.com/markshannon/python_formal_semantics/blob/master/examples/iteration_and_generators.md&quot;&gt;a
+				sketch of such a definition&lt;/a&gt;. &lt;br /&gt;
+				&lt;br /&gt;
+				The next steps for Shannon's project are to define the spec's
+				format, list its components, and decide what to do about &quot;awkward&quot;
+				language features such as &lt;code&gt;sys.settrace()&lt;/code&gt;.
+				He concluded that a semi-formal spec of Python would help
+				alternative implementations match CPython, would make PEPs less
+				ambiguous, and would clarify whether any existing &quot;odd
+				behavior is a feature or a bug.&quot; It would be possible to
+				reason about the correctness of optimizations. However, writing
+				the spec is work, and it could deter good PEPs in the future if
+				authors are daunted by writing their proposals in terms of the
+				spec. &lt;br /&gt;
+				&lt;br /&gt;
+				The audience's questions revealed their confusion about
+				Shannon's idea. Larry Hastings admitted he had &quot;lots of
+				trouble following this.&quot; Was Shannon proposing a new
+				language implementation based on the spec? Shannon said no, the
+				spec's purpose was to describe and reason about CPython and
+				other implementations. A. Jesse Jiryu Davis wondered if the
+				spec would be written in a formal modeling language like &lt;a
+				href=&quot;https://lamport.azurewebsites.net/tla/tla.html&quot;&gt;TLA+&lt;/a&gt;
+				or &lt;a href=&quot;https://alloytools.org/about.html&quot;&gt;Alloy&lt;/a&gt;,
+				but Shannon felt that would discourage contributors. English
+				would be the language of the spec; the &lt;a href=&quot;https://docs.oracle.com/javase/specs/jvms/se7/html/&quot;&gt;JVM
+				spec&lt;/a&gt; demonstrates this approach. &lt;br /&gt;
+				&lt;br /&gt;
+				Brett Cannon asked if PEPs for new language features would
+				require spec patches. Shannon replied that PEPs for deep
+				changes, similar to &lt;a href=&quot;https://www.python.org/dev/peps/pep-0380/&quot;&gt;the
+				introduction of yield from&lt;/a&gt; in Python 3.3, would
+				benefit if they were described in terms of the spec. &lt;br /&gt;
+				&lt;br /&gt;
+				The presentation ended with the attendees saying a Python
+				specification might be a good idea, but struggling to envision
+				it and how it would be used in practice. &lt;div class=&quot;feedflare&quot;&gt;
+				&lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=8LqjIAwXjDE:pBsg3uar1Zs:yIl2AUoC8zA&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?d=yIl2AUoC8zA&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=8LqjIAwXjDE:pBsg3uar1Zs:-BTjWOF_DHI&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=8LqjIAwXjDE:pBsg3uar1Zs:-BTjWOF_DHI&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=8LqjIAwXjDE:pBsg3uar1Zs:F7zBnMyn0Lo&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=8LqjIAwXjDE:pBsg3uar1Zs:F7zBnMyn0Lo&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=8LqjIAwXjDE:pBsg3uar1Zs:V_sGLiPBpWU&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=8LqjIAwXjDE:pBsg3uar1Zs:V_sGLiPBpWU&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt;
+				&lt;/div&gt;&lt;img src=&quot;http://feeds.feedburner.com/~r/PythonSoftwareFoundationNews/~4/8LqjIAwXjDE&quot;
+				height=&quot;1&quot; width=&quot;1&quot; alt=&quot;&quot; /&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 22:36:37 +0000</pubDate>
+		</item>
+		<item>
+			<title>Python Software Foundation: Replacing CPython’s parser -
+				Python Language Summit 2020
+			</title>
+			<guid>
+				http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/9htFVzjezN0/replacing-cpythons-parser-python.html
+			</guid>
+			<link>
+				http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/9htFVzjezN0/replacing-cpythons-parser-python.html
+			</link>
+			<description>&lt;a href=&quot;http://2.bp.blogspot.com/-nAgrpFZrZns/XquFHaPnEFI/AAAAAAAAE2w/YOvwC_PyhWYQq27Z8mp0j-MbYAYQcwNowCK4BGAYYCw/s1600/python-language-summit-02.jpg&quot;&gt;&lt;img
+				border=&quot;0&quot; src=&quot;https://2.bp.blogspot.com/-nAgrpFZrZns/XquFHaPnEFI/AAAAAAAAE2w/YOvwC_PyhWYQq27Z8mp0j-MbYAYQcwNowCK4BGAYYCw/s1600/python-language-summit-02.jpg&quot;
+				/&gt;&lt;/a&gt;&lt;br /&gt;
+				Since its start, Python’s grammar has been &lt;a href=&quot;https://en.wikipedia.org/wiki/LL_parser&quot;&gt;LL(1)&lt;/a&gt;:
+				it needs only a left-to-right parser that looks one token ahead
+				to resolve ambiguities. The standard CPython parser is &lt;a
+				href=&quot;https://devguide.python.org/compiler/&quot;&gt;produced
+				by a simple custom parser generator&lt;/a&gt;. There are some
+				costs to this simplicity, however. First, the &lt;a href=&quot;https://docs.python.org/3/reference/grammar.html&quot;&gt;official
+				Python grammar file&lt;/a&gt; does not capture the language
+				exactly. There are invalid constructs allowed by the grammar,
+				for example, this assignment expression (using the new walrus
+				operator):&lt;br /&gt;
+				&lt;pre&gt;[x for x in y] := [1, 2, 3]
+				&lt;/pre&gt;
+				This expression is illegal, because the left side of the walrus
+				operator must be a name, not an arbitrary sub-expression like
+				&lt;code&gt;[x for x in y]&lt;/code&gt;. Python’s LL(1) parser
+				is not powerful enough to enforce this rule, though, so it must
+				be enforced after parsing by special-case logic that runs while
+				transforming the parse tree into the abstract syntax tree
+				(AST).&lt;br /&gt;
+				&lt;br /&gt;
+				Worse, there is Python code that we would like to write but
+				cannot, because it can’t be parsed. Parenthesized
+				with-statements look reasonable &lt;a href=&quot;https://bugs.python.org/issue12782&quot;&gt;but
+				they’re currently prohibited&lt;/a&gt;:&lt;br /&gt;
+				&lt;pre&gt;with (
+				open(&quot;a_really_long_foo&quot;) as foo,
+				open(&quot;a_really_long_baz&quot;) as baz,
+				open(&quot;a_really_long_bar&quot;) as bar
+				):
+				...
+				&lt;/pre&gt;
+				&lt;a href=&quot;https://pyfound.blogspot.com/2020/04/the-2020-python-language-summit.html&quot;&gt;Read
+				more 2020 Python Language Summit coverage&lt;/a&gt;.&lt;br /&gt;
+				&lt;hr /&gt;
+				Guido van Rossum, Pablo Galindo, and Lysandros Nikolaou wrote a
+				new Python parser to excise these warts, and &lt;a href=&quot;https://www.python.org/dev/peps/pep-0617/&quot;&gt;proposed
+				PEP 617&lt;/a&gt; to adopt it in CPython. The new parser is
+				written in a more powerful style called a &lt;a href=&quot;https://en.wikipedia.org/wiki/Parsing_expression_grammar&quot;&gt;parsing
+				expression grammar&lt;/a&gt; (PEG), so the project is named
+				“PEGEN”.&lt;br /&gt;
+				&lt;br /&gt;
+				When a PEG parser reads the beginning of a token sequence that
+				could match several grammar rules, the parser tries each of
+				those rules, from left to right, until one succeeds. For
+				example, given a set of rules:&lt;br /&gt;
+				&lt;pre&gt;rule: A | B | C
+				&lt;/pre&gt;
+				The parser first tries to apply rule A to its input sequence.
+				If A succeeds, the parser ignores B and C. Otherwise, the
+				parser moves on and tries to apply rule B, and so on. Unlike an
+				LL(1) parser, a PEG parser can look ahead as far as necessary
+				to disambiguate a sequence. The grammar is deterministic: in
+				cases where multiple rules match, the leftmost wins. Some
+				sequences would require exponential time to find the matching
+				rule; to prevent this, most PEG parsers (including the new
+				Python parser) implement the “packrat” method to cache
+				intermediate results. A packrat parser can process any input in
+				linear time, but spends some memory on its cache.&lt;br /&gt;
+				&lt;br /&gt;
+				PEGEN’s grammar is far more legible than the old one’s, and the
+				grammar exactly matches all legal Python programs.&lt;br /&gt;
+				&lt;br /&gt;
+				CPython’s old parser progresses in stages: the tokenizer feeds
+				the LL(1) parser, which produces a concrete syntax tree (CST),
+				which is transformed into the AST. The CST stage is necessary
+				because the parser does not support left recursion. Consider
+				this expression:&lt;br /&gt;
+				&lt;pre&gt;a + b + c
+				&lt;/pre&gt;
+				The old parser’s CST is too flat, as the presenters showed in
+				this slide:&lt;br /&gt;
+				&lt;br /&gt;
+				&lt;div id=&quot;gdcalert2&quot;&gt;
+				&lt;div class=&quot;separator&quot;&gt;
+				&lt;a href=&quot;http://4.bp.blogspot.com/-lKOSl24sq8A/XquF3Oo2WvI/AAAAAAAAE3A/sBjH1mM48ygNf9TQnufQ04yIOJs1RnBHACK4BGAYYCw/s1600/parse-tree.png&quot;&gt;&lt;img
+				border=&quot;0&quot; src=&quot;https://4.bp.blogspot.com/-lKOSl24sq8A/XquF3Oo2WvI/AAAAAAAAE3A/sBjH1mM48ygNf9TQnufQ04yIOJs1RnBHACK4BGAYYCw/s1600/parse-tree.png&quot;
+				/&gt;&lt;/a&gt;&lt;/div&gt;
+				&lt;/div&gt;
+				&lt;br /&gt;
+				In real life, the expression will be evaluated at runtime by
+				first adding &lt;em&gt;a&lt;/em&gt; to &lt;em&gt;b&lt;/em&gt;,
+				then adding &lt;em&gt;c&lt;/em&gt;. Unfortunately the CST does
+				not encode this nested evaluation, so the LL(1) parser must
+				transform the program a second time to turn the CST into an AST
+				in the properly nested form, which can then generate bytecode.
+				PEGEN, on the other hand, directly generates the AST. Depending
+				on the program, PEGEN may use more or less memory: what it
+				spends on the packrat method, it may save by skipping the CST.&lt;br
+				/&gt;
+				&lt;br /&gt;
+				Emily Morehouse tested PEGEN against the old parser by
+				verifying they produce the same AST for every module in the
+				standard library and the top 3800 PyPI packages. (PEGEN parses
+				the standard library slightly faster than the old parser, but
+				uses 10% more memory.)&lt;br /&gt;
+				&lt;br /&gt;
+				Once Python has a non-LL(1) parser, its syntax may grow more
+				grammatically complex; Victor Stinner asked if third-party
+				Python parsers (such as linters and IDEs) might have
+				difficulty. Van Rossum felt certain they could adopt more
+				powerful parsers themselves, if necessary.&lt;br /&gt;
+				&lt;br /&gt;
+				The authors plan to switch CPython to the new parser
+				cautiously. In Python 3.9 alpha 6 the new parser will be
+				opt-in; it will become the default in beta 1 and in the
+				official 3.9 release, with the old parser still available by a
+				command line switch. As soon as the new parser is enabled,
+				parenthesized with-statements will be allowed! In Python 3.10
+				the old parser will be deleted. PEP 617 must still be approved,
+				however, and the new code needs a final review.&lt;br /&gt;
+				&lt;br /&gt;
+				The proposal met no opposition; in fact, several in the
+				audience asked whether it could become the default sooner.&lt;div
+				class=&quot;feedflare&quot;&gt;
+				&lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=9htFVzjezN0:CnOeo5sNBJs:yIl2AUoC8zA&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?d=yIl2AUoC8zA&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=9htFVzjezN0:CnOeo5sNBJs:-BTjWOF_DHI&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=9htFVzjezN0:CnOeo5sNBJs:-BTjWOF_DHI&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=9htFVzjezN0:CnOeo5sNBJs:F7zBnMyn0Lo&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=9htFVzjezN0:CnOeo5sNBJs:F7zBnMyn0Lo&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=9htFVzjezN0:CnOeo5sNBJs:V_sGLiPBpWU&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=9htFVzjezN0:CnOeo5sNBJs:V_sGLiPBpWU&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt;
+				&lt;/div&gt;&lt;img src=&quot;http://feeds.feedburner.com/~r/PythonSoftwareFoundationNews/~4/9htFVzjezN0&quot;
+				height=&quot;1&quot; width=&quot;1&quot; alt=&quot;&quot; /&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 22:36:25 +0000</pubDate>
+		</item>
+		<item>
+			<title>Python Software Foundation: All Strings Become f-strings -
+				Python Language Summit 2020
+			</title>
+			<guid>
+				http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/5zaUST-FIfU/all-strings-become-f-strings-python.html
+			</guid>
+			<link>
+				http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/5zaUST-FIfU/all-strings-become-f-strings-python.html
+			</link>
+			<description>&lt;div class=&quot;separator&quot;&gt;&lt;a href=&quot;https://1.bp.blogspot.com/-44mgfM301kw/XqHqaAtv-MI/AAAAAAAAE1k/-ZeiThGE8eE9Tc8zeknl6AQd_xElkB6bwCLcBGAsYHQ/s1600/eric-smith.jpg&quot;&gt;&lt;img
+				border=&quot;0&quot; height=&quot;320&quot; src=&quot;https://1.bp.blogspot.com/-44mgfM301kw/XqHqaAtv-MI/AAAAAAAAE1k/-ZeiThGE8eE9Tc8zeknl6AQd_xElkB6bwCLcBGAsYHQ/s320/eric-smith.jpg&quot;
+				width=&quot;239&quot; /&gt;&lt;/a&gt;&lt;/div&gt;&lt;br /&gt;
+				The first language change proposed this year was the most
+				radical: to make f-strings the default. Eric V. Smith, who
+				wrote &lt;a href=&quot;https://www.python.org/dev/peps/pep-0498/&quot;&gt;the
+				PEP for f-strings&lt;/a&gt; in 2015, said they are the killer
+				feature of Python 3.6, and they are the motivation for many of
+				his clients to move to Python 3. However, they are error-prone.
+				It's common to forget the &quot;f&quot; prefix:&lt;br /&gt;
+				&lt;pre class=&quot;prettyprint&quot;&gt;x = 1
+				# Forgot the f prefix.
+				print(&quot;The value is {x}&quot;)&lt;/pre&gt;Smith has
+				observed programmers f-prefixing all strings, whether they
+				include substitutions or not, just to avoid this mistake.&lt;br
+				/&gt;
+				&lt;br /&gt;
+				&lt;a href=&quot;https://pyfound.blogspot.com/2020/04/the-2020-python-language-summit.html&quot;&gt;Read
+				more 2020 Python Language Summit coverage.&lt;/a&gt;&lt;br /&gt;
+				&lt;br /&gt;
+				&lt;hr /&gt;When f-strings were added in 3.6, it was suggested
+				to make them the default, but this was too big a breaking
+				change. Besides, replacing all literal brace characters with
+				double braces would be ugly:&lt;br /&gt;
+				&lt;pre class=&quot;prettyprint&quot;&gt;&quot;A single pair of
+				braces: {{}}&quot;&lt;/pre&gt;In this year's Summit, Smith
+				proposed again to make f-strings the default. The following
+				kinds of strings would become f-strings:&lt;br /&gt;
+				&lt;ul&gt;&lt;li&gt;&lt;code&gt; &quot;string&quot;&lt;/code&gt;
+				—&amp;nbsp;an f-string&lt;br /&gt;
+				&lt;/li&gt;
+				&lt;li&gt;&lt;code&gt;f&quot;string&quot;&lt;/code&gt; —&amp;nbsp;still
+				an f-string&lt;br /&gt;
+				&lt;/li&gt;
+				&lt;li&gt;&lt;code&gt;r&quot;string&quot;&lt;/code&gt; —&amp;nbsp;a
+				raw f-string&lt;br /&gt;
+				&lt;/li&gt;
+				&lt;/ul&gt;Binary literals like b&quot;string&quot; would not
+				become f-strings. Smith would add a new &quot;p&quot; string
+				prefix for plain strings, which would behave like ordinary
+				strings today.&lt;br /&gt;
+				&lt;ul&gt;&lt;li&gt;&lt;code&gt;p&quot;string&quot;&lt;/code&gt;
+				—&amp;nbsp;a plain string&lt;br /&gt;
+				&lt;/li&gt;
+				&lt;/ul&gt;Performance would not be affected: the runtime
+				behavior of a string without any substitutions would be the
+				same as today. Plain strings would still have some uses; for
+				example, regular expressions that include braces, or as the
+				input to &lt;code&gt;str.format&lt;/code&gt;. In Smith's
+				opinion, f-strings have superseded &lt;code&gt;str.format&lt;/code&gt;,
+				but several in the audience objected that &lt;code&gt;str.format&lt;/code&gt;
+				with a plain string allows for late binding, and f-strings
+				don't obviate &lt;code&gt;str.format_map&lt;/code&gt;.&lt;br /&gt;
+				&lt;br /&gt;
+				Smith acknowledged some problems with his idea. It would
+				introduce yet another string prefix. Flipping the master switch
+				to enable f-mode would break some code, so there must be a way
+				to gradually enable the change module by module, perhaps like:&lt;br
+				/&gt;
+				&lt;pre class=&quot;prettyprint&quot;&gt;from __future__ import
+				all_fstrings
+				&lt;/pre&gt;He was concerned the change was so drastic that the
+				Python core developers would never have the nerve to enable it
+				without requiring a &lt;code&gt;future&lt;/code&gt; import. If
+				so, the idea should be abandoned right away.&lt;br /&gt;
+				&lt;br /&gt;
+				Yarko Tymciurak asked via chat: &quot;How do you describe to
+				beginners what p'why is this needed' is?&quot; Smith conceded
+				that p-strings make the language more complicated, but, he
+				said, &quot;There's going to be very few p's in the wild, and I
+				think their explanation will be fairly obvious.&quot;&lt;br /&gt;
+				&lt;br /&gt;
+				Several attendees were enthusiastic to make the change. Brett
+				Cannon said that removing the need for f-prefix would make the
+				language easier for beginners.&lt;br /&gt;
+				&lt;br /&gt;
+				Larry Hastings pointed out that PHP strings are format strings
+				by default and &quot;the script kids love it.&quot; However, he
+				wrote, &quot;It seems to me this is solving the problem of 'oh
+				I forgot to put an f in front of my string', and not noticing
+				until it's too late. Is that problem bad enough that we have to
+				change the language? &quot; Many agreed that f-strings by
+				default would have been a good idea if Python were beginning
+				from scratch; however, Paul Moore, Guido van Rossum, and others
+				feared the disruption would outweigh the benefits.&lt;em&gt;
+				&lt;/em&gt;The group concluded that Smith should send his PEP
+				to the mailing list for further debate. &lt;div class=&quot;feedflare&quot;&gt;
+				&lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=5zaUST-FIfU:ZjArZ6iYspQ:yIl2AUoC8zA&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?d=yIl2AUoC8zA&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=5zaUST-FIfU:ZjArZ6iYspQ:-BTjWOF_DHI&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=5zaUST-FIfU:ZjArZ6iYspQ:-BTjWOF_DHI&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=5zaUST-FIfU:ZjArZ6iYspQ:F7zBnMyn0Lo&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=5zaUST-FIfU:ZjArZ6iYspQ:F7zBnMyn0Lo&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?a=5zaUST-FIfU:ZjArZ6iYspQ:V_sGLiPBpWU&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonSoftwareFoundationNews?i=5zaUST-FIfU:ZjArZ6iYspQ:V_sGLiPBpWU&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt;
+				&lt;/div&gt;&lt;img src=&quot;http://feeds.feedburner.com/~r/PythonSoftwareFoundationNews/~4/5zaUST-FIfU&quot;
+				height=&quot;1&quot; width=&quot;1&quot; alt=&quot;&quot; /&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 22:35:36 +0000</pubDate>
+		</item>
+		<item>
+			<title>qutebrowser development blog: Paving the road towards
+				qutebrowser v2.0
+			</title>
+			<guid>
+				https://blog.qutebrowser.org/paving-the-road-towards-qutebrowser-v20.html
+			</guid>
+			<link>
+				https://blog.qutebrowser.org/paving-the-road-towards-qutebrowser-v20.html
+			</link>
+			<description>&lt;p&gt;Today, it's been exactly 6 months since I
+				launched the
+				&lt;a class=&quot;reference external&quot; href=&quot;https://github.com/sponsors/The-Compiler&quot;&gt;GitHub
+				Sponsors campaign&lt;/a&gt; - time flies!&lt;/p&gt;
+				&lt;p&gt;I wanted to use this opportunity to update everyone on
+				what has been going on,
+				on my plans for qutebrowser's future, and on various other bits
+				and bytes - I
+				have a lot of things I …&lt;/p&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 20:15:46 +0000</pubDate>
+		</item>
+		<item>
+			<title>Anwesha Das: Taking backup for znc instance in Python
+			</title>
+			<guid>
+				http://anweshadas.in/taking-backup-for-znc-instance-in-python/
+			</guid>
+			<link>
+				http://anweshadas.in/taking-backup-for-znc-instance-in-python/
+			</link>
+			<description>&lt;!--kg-card-begin: markdown--&gt;&lt;p&gt;&lt;a
+				href=&quot;https://en.wikipedia.org/wiki/Internet_Relay_Chat&quot;&gt;IRC&lt;/a&gt;
+				plays an invaluable role in the life of so many people,
+				separated by so many miles. It has been the primary source of
+				communication for the Free and Open Source community for
+				decades, now. In my last &lt;a href=&quot;http://anweshadas.in/setting-up-a-znc-service/&quot;&gt;post&lt;/a&gt;,
+				I shared how to install a &lt;a href=&quot;https://wiki.znc.in/ZNC&quot;&gt;znc
+				bouncer&lt;/a&gt; to stay connected persistently to IRC. If you
+				want to stay on top of the comings and goings on, in your
+				favourite communities.&lt;/p&gt;
+				&lt;p&gt;The next step, after installation, is to always create
+				a backup. No sys-admin wants to lose their data. Mainly this
+				was user data for me this time.&lt;br /&gt;
+				So, a backup was needed. But the job of :&lt;/p&gt;
+				&lt;ul&gt;
+				&lt;li&gt;getting into the server&lt;/li&gt;
+				&lt;li&gt;taking a backup&lt;/li&gt;
+				&lt;li&gt;scp ing the file down to my computer and then,&lt;/li&gt;
+				&lt;li&gt;closing the box down,&lt;/li&gt;
+				&lt;/ul&gt;
+				&lt;p&gt;seemed pretty dull to me.&lt;br /&gt;
+				So why not automate stuff? I choose Python over Bash for this.&lt;br
+				/&gt;
+				(It was the PyLady inside me :))&lt;/p&gt;
+				&lt;h2 id=&quot;createatarballbackup&quot;&gt;Create a tarball
+				backup&lt;/h2&gt;
+				&lt;p&gt;The 2 directories I need to backup are :&lt;/p&gt;
+				&lt;p&gt;&lt;code&gt;/etc/letsencrypt&lt;/code&gt; : The TLS
+				certificates.&lt;br /&gt;
+				&lt;code&gt;/var/lib/znc/.znc&lt;/code&gt; : The znc data
+				directory.&lt;/p&gt;
+				&lt;p&gt;I learned how to use the &lt;a href=&quot;https://docs.python.org/3.1/library/tarfile.html&quot;&gt;tarfile
+				module&lt;/a&gt; to create the tar file.&lt;/p&gt;
+				&lt;p&gt;This is the code in my &lt;em&gt;backup.py&lt;/em&gt;&lt;/p&gt;
+				&lt;pre&gt;&lt;code&gt;#!/usr/bin/env python3
+
+				import os
+				import tarfile
+				import os.path
+				from pathlib import Path
+				from datetime import date
+
+				today = str(date.today())
+
+				def make_tarfile(output_filename, source_dirs):
+				with tarfile.open(output_filename, &amp;quot;w:gz&amp;quot;) as
+				tar:
+				for source_dir in source_dirs:
+				tar.add(source_dir, arcname=os.path.basename(source_dir))
+
+				filename = f&amp;quot;znc-dgplug-{today}.tar.gz&amp;quot;
+				homedir = Path.home()
+				fullpath = os.path.join(str(homedir), &amp;quot;backups&amp;quot;)
+				if not os.path.exists(fullpath):
+				os.mkdir(fullpath)
+
+				finalpath = os.path.join(fullpath, filename)
+				make_tarfile(finalpath, [&amp;quot;/etc/letsencrypt&amp;quot;,
+				&amp;quot;/var/lib/znc/.znc&amp;quot;])
+				print(f&amp;quot;Backup is saved at {finalpath}&amp;quot;)
+
+				&lt;/code&gt;&lt;/pre&gt;
+				&lt;p&gt;Running the code, we get the filepath of the tar file
+				and the date of running the file.&lt;/p&gt;
+				&lt;p&gt;To do the next set of jobs, i.e&lt;/p&gt;
+				&lt;ul&gt;
+				&lt;li&gt;ssh into the server,&lt;/li&gt;
+				&lt;li&gt;execute backup.py from the command output,&lt;/li&gt;
+				&lt;li&gt;find the backup filename, and&lt;/li&gt;
+				&lt;li&gt;scp the filename back into my computer, I wrote a
+				file called &lt;em&gt;runonserver.py&lt;/em&gt;.&lt;/li&gt;
+				&lt;/ul&gt;
+				&lt;p&gt;I am using the &lt;a href=&quot;https://docs.paramiko.org/en/stable/index.html&quot;&gt;paramiko
+				module&lt;/a&gt; to ssh into the box and to execute commands.
+				And the &lt;a href=&quot;https://pypi.org/project/scp/&quot;&gt;scp
+				module&lt;/a&gt; is helping me copy the data down into my local
+				machine.&lt;/p&gt;
+				&lt;pre&gt;&lt;code&gt;#!/usr/bin/env python3
+
+				import paramiko
+				from scp import SCPClient
+				import os.path
+
+
+				def create_backup(client):
+				chan = client.get_transport().open_session()
+				chan.settimeout(60)
+				chan.set_combine_stderr(True)
+				chan.get_pty()
+				chan.exec_command(&amp;quot;/root/backup.py&amp;quot;)
+				stdout = chan.makefile(&amp;quot;r&amp;quot;, -1)
+				stderr = chan.makefile_stderr(&amp;quot;r&amp;quot;, -1)
+				stdout_text = stdout.read().decode(&amp;quot;utf-8&amp;quot;).strip(&amp;quot;\r\n&amp;quot;)
+				stderr_text = stderr.read()
+				status = int(chan.recv_exit_status())
+				return stdout_text, status
+
+
+				def main():
+				client = paramiko.SSHClient()
+				client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+				client.connect(hostname=&amp;quot;znc.dgplug.org&amp;quot;,
+				port=22, username=&amp;quot;root&amp;quot;)
+				stdout, status = create_backup(client)
+				if status != 0:
+				client.close()
+				print(f&amp;quot;The command failed with output: {stdout}&amp;quot;)
+				return
+				filepath = get_filepath(stdout)
+				scp = SCPClient(client.get_transport())
+				scp.get(filepath)
+				scp.close()
+				client.close()
+				filename = os.path.basename(filepath)
+				print(filename)
+
+
+				def get_filepath(cmdoutput):
+				result = cmdoutput.split()[-1]
+				return result
+
+
+				if __name__ == &amp;quot;__main__&amp;quot;:
+				main()
+
+				&lt;/code&gt;&lt;/pre&gt;
+				&lt;p&gt;This little handy script has made my life really easy.
+				Hopefully, this will help you readers, too.&lt;/p&gt;
+				&lt;!--kg-card-end: markdown--&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 19:09:05 +0000</pubDate>
+		</item>
+		<item>
+			<title>Python Insider: Pip 20.1 has been released</title>
+			<guid>
+				http://feedproxy.google.com/~r/PythonInsider/~3/6Lb4AOXLqx4/pip-20-1-released.html
+			</guid>
+			<link>
+				http://feedproxy.google.com/~r/PythonInsider/~3/6Lb4AOXLqx4/pip-20-1-released.html
+			</link>
+			<description>On behalf of the PyPA, I am pleased to announce that a
+				new version of pip, pip 20.1, has been released.&lt;br /&gt;
+				&lt;br /&gt;
+				To install pip 20.1, you can run:&lt;br /&gt;
+				&lt;blockquote class=&quot;tr_bq&quot;&gt;
+				&lt;span&gt;python -m pip install --upgrade pip&lt;/span&gt;&lt;/blockquote&gt;
+				The highlights for this release are:
+				&lt;ul&gt;
+				&lt;li&gt;Significant speedups when building local directories,
+				by changing behavior to perform
+				in-place builds, instead of copying to temporary directories.&lt;/li&gt;
+				&lt;li&gt;Significant speedups in &lt;code&gt;pip list
+				--outdated&lt;/code&gt;, by parallelizing network
+				access. This is the first instance of parallel code within
+				pip's codebase.&lt;/li&gt;
+				&lt;li&gt;A new &lt;code&gt;pip cache&lt;/code&gt; command,
+				which makes it possible to introspect and manage
+				pip's cache directory.&lt;/li&gt;
+				&lt;li&gt;Better &lt;code&gt;pip freeze&lt;/code&gt; for
+				packages installed from direct URLs, enabled by the
+				implementation of PEP 610.&lt;/li&gt;
+				&lt;/ul&gt;
+				&lt;br /&gt;
+
+				This release also contains an alpha version of pip's next
+				generation resolver. It is
+				&lt;strong&gt;off by default&lt;/strong&gt; because it is &lt;strong&gt;unstable
+				and not ready for everyday
+				use&lt;/strong&gt;. If you're curious about this, please visit
+				&lt;a href=&quot;https://github.com/pypa/pip/issues/8099&quot;&gt;this
+				GitHub issue about the resolver, what doesn't work yet, and
+				what kind of testing would help us out&lt;/a&gt;. We &lt;a
+				href=&quot;https://pyfound.blogspot.com/2020/03/new-pip-resolver-to-roll-out-this-year.html&quot;&gt;plan
+				to release a version of pip that includes a beta of the new
+				resolver in May&lt;/a&gt;.&lt;br /&gt;
+				&lt;br /&gt;
+
+				The &lt;a href=&quot;https://pip.pypa.io/en/latest/news/&quot;&gt;full
+				changelog&lt;/a&gt; is available.&lt;br /&gt;
+				&lt;br /&gt;
+
+				As with all pip releases, a significant amount of the work was
+				contributed by pip's
+				user community. Huge thanks to all who have contributed,
+				whether through code,
+				documentation, issue reports and/or discussion. Your help keeps
+				pip improving, and is
+				hugely appreciated.&lt;br /&gt;
+
+				&lt;br /&gt;
+				Thank you to the pip and PyPA maintainers, and to all the
+				contributors and volunteers who work on or use Python packaging
+				tools.&lt;br /&gt;
+				&lt;br /&gt;
+				And thank you to &lt;a href=&quot;https://www.mozilla.org/en-US/moss/&quot;&gt;Mozilla
+				(through its Mozilla Open Source Support Awards)&lt;/a&gt; and
+				to &lt;a href=&quot;https://chanzuckerberg.com/eoss/&quot;&gt;the
+				Chan Zuckerberg Initiative&lt;/a&gt; DAF, an advised fund of
+				Silicon Valley Community Foundation, for funding enabling work
+				on the new resolver, and thanks to the PSF and the Packaging
+				WG for obtaining and administering that funding.&lt;div class=&quot;feedflare&quot;&gt;
+				&lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonInsider?a=6Lb4AOXLqx4:nWDzL_Ngljo:yIl2AUoC8zA&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonInsider?d=yIl2AUoC8zA&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonInsider?a=6Lb4AOXLqx4:nWDzL_Ngljo:-BTjWOF_DHI&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonInsider?i=6Lb4AOXLqx4:nWDzL_Ngljo:-BTjWOF_DHI&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonInsider?a=6Lb4AOXLqx4:nWDzL_Ngljo:F7zBnMyn0Lo&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonInsider?i=6Lb4AOXLqx4:nWDzL_Ngljo:F7zBnMyn0Lo&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonInsider?a=6Lb4AOXLqx4:nWDzL_Ngljo:V_sGLiPBpWU&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonInsider?i=6Lb4AOXLqx4:nWDzL_Ngljo:V_sGLiPBpWU&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt; &lt;a href=&quot;http://feeds.feedburner.com/~ff/PythonInsider?a=6Lb4AOXLqx4:nWDzL_Ngljo:qj6IDK7rITs&quot;&gt;&lt;img
+				src=&quot;http://feeds.feedburner.com/~ff/PythonInsider?d=qj6IDK7rITs&quot;
+				border=&quot;0&quot; /&gt;&lt;/a&gt;
+				&lt;/div&gt;&lt;img src=&quot;http://feeds.feedburner.com/~r/PythonInsider/~4/6Lb4AOXLqx4&quot;
+				height=&quot;1&quot; width=&quot;1&quot; alt=&quot;&quot; /&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 18:42:24 +0000</pubDate>
+		</item>
+		<item>
+			<title>Reuven Lerner: Reminder: My free, weekly “Python for
+				non-programmers” course continues on Friday, May 1st
+			</title>
+			<guid>
+				https://lerner.co.il/2020/04/30/reminder-my-free-weekly-python-for-non-programmers-course-continues-on-friday-may-1st/
+			</guid>
+			<link>
+				https://lerner.co.il/2020/04/30/reminder-my-free-weekly-python-for-non-programmers-course-continues-on-friday-may-1st/
+			</link>
+			<description>&lt;p&gt;This is a reminder that my free, weekly &amp;#8220;&lt;a
+				href=&quot;https://PythonForNonProgrammers.com&quot;&gt;Python
+				for non-programmers&lt;/a&gt;&amp;#8221; course will continue
+				tomorrow (Friday), May 1st, at 10 a.m. Eastern.&lt;/p&gt;
+
+
+				&lt;p&gt;In this session, our 7th, we&amp;#8217;ll talk abut
+				lists! (This is more exciting than it might sound at first.)&lt;/p&gt;
+
+
+				&lt;p&gt;The course is &lt;strong&gt;100% free of charge and
+				without obligation&lt;/strong&gt;. All sessions are recorded
+				and available to anyone who has enrolled — so it&amp;#8217;s
+				not too late to sign up and learn Python! &lt;/p&gt;
+
+
+				&lt;p&gt;And if you cannot make the live sessions, you can
+				always watch the recorded ones, and participate in our private
+				forum.&lt;/p&gt;
+
+
+				&lt;p&gt;More than 1,700 people have already joined. They&amp;#8217;re
+				learning to program — and so can you. Join us! Just register at
+				&lt;a href=&quot;https://PythonForNonProgrammers.com&quot;&gt;PythonForNonProgrammers.com&lt;/a&gt;.&lt;/p&gt;
+				&lt;span class=&quot;tve-leads-two-step-trigger
+				tl-2step-trigger-0&quot;&gt;&lt;/span&gt;&lt;span class=&quot;tve-leads-two-step-trigger
+				tl-2step-trigger-0&quot;&gt;&lt;/span&gt;&lt;p&gt;The post &lt;a
+				rel=&quot;nofollow&quot; href=&quot;https://lerner.co.il/2020/04/30/reminder-my-free-weekly-python-for-non-programmers-course-continues-on-friday-may-1st/&quot;&gt;Reminder:
+				My free, weekly &amp;#8220;Python for non-programmers&amp;#8221;
+				course continues on Friday, May 1st&lt;/a&gt; appeared first on
+				&lt;a rel=&quot;nofollow&quot; href=&quot;https://lerner.co.il&quot;&gt;Reuven
+				Lerner&lt;/a&gt;.&lt;/p&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 16:44:37 +0000</pubDate>
+		</item>
+		<item>
+			<title>PyCharm: R 4.0.0 and better UX in the R Plugin</title>
+			<guid>http://feedproxy.google.com/~r/Pycharm/~3/4qtUhJaFjsw/</guid>
+			<link>http://feedproxy.google.com/~r/Pycharm/~3/4qtUhJaFjsw/</link>
+			<description>&lt;p&gt;Although it has not been a while since our
+				last update release, we’re ready to announce some important
+				enhancements and new features:&lt;/p&gt;
+				&lt;ol&gt;
+				&lt;li&gt;Long-awaited support of &lt;a href=&quot;https://cran.r-project.org/src/base/R-4/&quot;&gt;R
+				4.0.0&lt;/a&gt; . Download it and try with the &lt;a href=&quot;https://plugins.jetbrains.com/plugin/6632-r-language-for-intellij&quot;&gt;R
+				plugin&lt;/a&gt; for PyCharm.&lt;/li&gt;
+				&lt;li&gt;In response to your feedback, we improved user
+				interface and workflows for exporting generated plots into the
+				portable network graphics (.png).  Just pull the lower-right
+				corner of the plot to adjust its size. There are more helpful
+				options to keep up the image quality. You can also enable
+				opening the exported image right after clicking the &lt;strong&gt;Save&lt;/strong&gt;
+				button.&lt;a href=&quot;https://d3nmt5vlzunoa1.cloudfront.net/pycharm/files/2020/04/pic1.png&quot;
+				rel=&quot;attachment wp-att-6780&quot;&gt;&lt;img class=&quot;alignnone
+				wp-image-6780&quot; src=&quot;https://d3nmt5vlzunoa1.cloudfront.net/pycharm/files/2020/04/pic1.png&quot;
+				alt=&quot;pic1&quot; width=&quot;533&quot; height=&quot;477&quot;
+				/&gt;&lt;/a&gt;&lt;/li&gt;
+				&lt;li&gt;Want to have your code properly documented? It is
+				quite easy to do with the newly added support for &lt;a href=&quot;https://cran.r-project.org/web/packages/roxygen2/vignettes/roxygen2.html&quot;&gt;Roxygen&lt;/a&gt;.
+				Describe your function, its parameters, return statement,
+				related examples, and each time you hover over the function
+				call, you’ll be able to preview the corresponding documentation
+				in a dedicated popup.&lt;a href=&quot;https://d3nmt5vlzunoa1.cloudfront.net/pycharm/files/2020/04/pic2.png&quot;
+				rel=&quot;attachment wp-att-6782&quot;&gt;&lt;img class=&quot;alignnone
+				wp-image-6782 &quot; src=&quot;https://d3nmt5vlzunoa1.cloudfront.net/pycharm/files/2020/04/pic2.png&quot;
+				alt=&quot;pic2&quot; width=&quot;537&quot; height=&quot;595&quot;
+				/&gt;&lt;/a&gt;&lt;/li&gt;
+				&lt;/ol&gt;
+				&lt;h2&gt;&lt;b&gt;Interested?&lt;/b&gt;&lt;/h2&gt;
+				&lt;p&gt;Download PyCharm&lt;a href=&quot;https://www.jetbrains.com/pycharm/&quot;&gt;
+				from our website&lt;/a&gt; and install the R plugin. See more
+				details and installation instructions in&lt;a href=&quot;https://www.jetbrains.com/help/pycharm/r-plugin-support.html&quot;&gt;
+				PyCharm documentation&lt;/a&gt;.&lt;/p&gt;
+				&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+				&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+				&lt;img src=&quot;http://feeds.feedburner.com/~r/Pycharm/~4/4qtUhJaFjsw&quot;
+				height=&quot;1&quot; width=&quot;1&quot; alt=&quot;&quot; /&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 14:46:05 +0000</pubDate>
+		</item>
+		<item>
+			<title>Codementor: How I learned Python Programming</title>
+			<guid>
+				https://www.codementor.io/dharviw3sols/how-i-learned-python-programming-15xwgw8c2l
+			</guid>
+			<link>
+				https://www.codementor.io/dharviw3sols/how-i-learned-python-programming-15xwgw8c2l
+			</link>
+			<description>About me
+				I am a lead Python developer at a w3sols and I have been
+				working on Web and its related technology stack for 3 years
+				now.
+				I have a high versatility in solving real world problems
+				with...
+			</description>
+			<pubDate>Thu, 30 Apr 2020 10:40:31 +0000</pubDate>
+		</item>
+		<item>
+			<title>Codementor: How and why I built Data Scraping script in
+				Python3
+			</title>
+			<guid>
+				https://www.codementor.io/dharviw3sols/how-and-why-i-built-data-scraping-script-in-python3-15zzh1yk4s
+			</guid>
+			<link>
+				https://www.codementor.io/dharviw3sols/how-and-why-i-built-data-scraping-script-in-python3-15zzh1yk4s
+			</link>
+			<description>About me
+				I am a Professional Python Developer who has built complex data
+				scrapers, Python backends for mobile and web apps. I am working
+				on AI and ML based tech stack these days and plan to...
+			</description>
+			<pubDate>Thu, 30 Apr 2020 10:31:12 +0000</pubDate>
+		</item>
+		<item>
+			<title>Codementor: Full Stack Development in Django</title>
+			<guid>
+				https://www.codementor.io/maxongzb/full-stack-development-in-django-reading-time-3-mins-15zz3791m2
+			</guid>
+			<link>
+				https://www.codementor.io/maxongzb/full-stack-development-in-django-reading-time-3-mins-15zz3791m2
+			</link>
+			<description>Talks about how versatile Django could be used by
+				breaking the default Django to mix and match it to fit your own
+				use case. Instead of using what is provided by Django.
+			</description>
+			<pubDate>Thu, 30 Apr 2020 10:13:26 +0000</pubDate>
+		</item>
+		<item>
+			<title>Python Bytes: #179 Guido van Rossum drops in on Python
+				Bytes
+			</title>
+			<guid>
+				https://pythonbytes.fm/episodes/show/179/guido-van-rossum-drops-in-on-python-bytes
+			</guid>
+			<link>
+				https://pythonbytes.fm/episodes/show/179/guido-van-rossum-drops-in-on-python-bytes
+			</link>
+			<description>&amp;lt;p&amp;gt;Sponsored by DigitalOcean: &amp;lt;a
+				href=&quot;http://pythonbytes.fm/datadog&quot;&amp;gt;&amp;lt;strong&amp;gt;pythonbytes.fm/datadog&amp;lt;/strong&amp;gt;&amp;lt;/a&amp;gt;&amp;lt;/p&amp;gt;
+
+				&amp;lt;p&amp;gt;Special guest: &amp;lt;a href=&quot;https://twitter.com/gvanrossum/&quot;&amp;gt;&amp;lt;strong&amp;gt;Guido
+				van Rossum&amp;lt;/strong&amp;gt;&amp;lt;/a&amp;gt;&amp;lt;/p&amp;gt;
+
+				&amp;lt;hr /&amp;gt;
+
+				&amp;lt;p&amp;gt;&amp;lt;strong&amp;gt;Brian #1:&amp;lt;/strong&amp;gt;
+				&amp;lt;a href=&quot;https://www.djangoproject.com/weblog/2020/mar/12/governance/&quot;&amp;gt;&amp;lt;strong&amp;gt;New
+				governance model for the Django project&amp;lt;/strong&amp;gt;&amp;lt;/a&amp;gt;&amp;lt;/p&amp;gt;
+
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;James Bennet on DjangoProject Blog&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;&amp;lt;a href=&quot;https://github.com/django/deps/blob/master/accepted/0010-new-governance.rst&quot;&amp;gt;DEP
+				10&amp;lt;/a&amp;gt; (Django Enhancement Proposal)&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Looks like it’s been in the making since at
+				least 2018&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;The specifics are definitely interesting
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;“core team” dissolved&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;new role, “merger” with commit access only
+				for merging pull requests.
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;hold no decision making privileges&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;technical decisions made in public venues&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;“technical board” kept where necessary, but
+				historically it’s rare.
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;no longer elected by committers, but anyone
+				can run and be elected by DSF individual members.&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;More interesting to me is the rationale
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;Grow the set of people contributing to Django&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Remove the barriers to participation&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Looking at how decisions are made anyway
+				historically, by reviewing pull requests, and merges done by
+				“Fellows”, paid contractors of the DSF.&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Specifically, taking into account the
+				specifics of the current state of participation in Django,
+				trying to set it up for inclusion and growth in the future, and
+				the specifics of this project. Not trying to clone the
+				governance of a different project.&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;
+
+				&amp;lt;hr /&amp;gt;
+
+				&amp;lt;p&amp;gt;&amp;lt;strong&amp;gt;Michael #2:&amp;lt;/strong&amp;gt;
+				&amp;lt;a href=&quot;https://github.com/ResidentMario/missingno&quot;&amp;gt;&amp;lt;strong&amp;gt;missingno&amp;lt;/strong&amp;gt;&amp;lt;/a&amp;gt;&amp;lt;/p&amp;gt;
+
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;Missing data visualization module for Python.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;A small toolset of flexible and easy-to-use
+				missing data visualizations &amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Quick visual summary of the completeness (or
+				lack thereof) of your dataset&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Just call &amp;lt;code&amp;gt;msno.matrix(collisions.sample(250))&amp;lt;/code&amp;gt;
+				and here’s what you’ll see:&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;
+
+				&amp;lt;p&amp;gt;&amp;lt;img src=&quot;https://trello-attachments.s3.amazonaws.com/58e3f7c543422d7f3ad84f33/5e99eacb174b2331ce3ea70c/0aff57a3b346073ae0c832551d9ef35f/image.png&quot;
+				alt=&quot;&quot; /&amp;gt;&amp;lt;/p&amp;gt;
+
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;The sparkline at right summarizes the general
+				shape of the data completeness and points out the rows with the
+				maximum and minimum nullity in the dataset.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Other visualizations are available (heat
+				maps, bar charts, etc)&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;The dendrogram allows you to more fully
+				correlate variable completion, revealing trends deeper than the
+				pairwise ones visible in the correlation heatmap.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;The dendrogram uses a &amp;lt;a href=&quot;http://docs.scipy.org/doc/scipy/reference/cluster.hierarchy.html&quot;&amp;gt;hierarchical
+				clustering algorithm&amp;lt;/a&amp;gt; (courtesy of &amp;lt;code&amp;gt;scipy&amp;lt;/code&amp;gt;)
+				to bin variables against one another by their nullity
+				correlation.&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;
+
+				&amp;lt;hr /&amp;gt;
+
+				&amp;lt;p&amp;gt;&amp;lt;strong&amp;gt;Guido #3:&amp;lt;/strong&amp;gt;
+				Announcements from the language summit.&amp;lt;/p&amp;gt;
+
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;See the schedule of &amp;lt;a href=&quot;https://us.pycon.org/2020/events/languagesummit/&quot;&amp;gt;topics
+				covered here&amp;lt;/a&amp;gt;.&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;
+
+				&amp;lt;hr /&amp;gt;
+
+				&amp;lt;p&amp;gt;&amp;lt;strong&amp;gt;Brian #4:&amp;lt;/strong&amp;gt;
+				&amp;lt;strong&amp;gt;Codes of Conduct and Enforcement&amp;lt;/strong&amp;gt;&amp;lt;/p&amp;gt;
+
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;I’ve been thinking about this a lot lately.
+				No reason. Just interesting topic, I think.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Interesting the differences in CoC and
+				enforcement clauses of different projects based on the types of
+				interaction most likely to need enforcement.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Two examples
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;PSF
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;Scope (focus seems to be first on events,
+				second on online)&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;&amp;lt;a href=&quot;https://www.python.org/psf/conduct/&quot;&amp;gt;PSF
+				Code of Conduct&amp;lt;/a&amp;gt;
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;being open&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;focus on what’s best for the community&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;acknowledging time and effort&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;being respectful of different viewpoints and
+				experiences&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;showing empathy towards other community
+				members&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;being considerate&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;being respectful&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;gracefully accepting constructive criticism&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;using welcoming and inclusive language&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;list of inappropriate behavior&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;&amp;lt;a href=&quot;https://www.python.org/psf/conduct/enforcement/&quot;&amp;gt;PSF
+				CoC Enforcement Procedures&amp;lt;/a&amp;gt;
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;2/3 majority vote among non conflicted work
+				group members.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Process for disagreement of the work group&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Django
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;Scope (focus on online spaces, events seem to
+				be covered elsewhere)&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;&amp;lt;a href=&quot;https://www.djangoproject.com/conduct/&quot;&amp;gt;Django
+				Code of Conduct&amp;lt;/a&amp;gt;
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;be friendly and patient&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;be welcoming&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;be considerate&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;be respectful&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;be careful in the words you choose&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Includes examples of harassment and
+				exclusionary behavior that isn’t acceptable.&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;when we disagree try to understand why&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;&amp;lt;a href=&quot;https://www.djangoproject.com/conduct/enforcement-manual/&quot;&amp;gt;Django
+				CoC Enforcement Manual&amp;lt;/a&amp;gt;
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;Resolution timelines in place. Aiming for
+				resolution within a week.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Unilateral authority: Any committee member
+				may act immediately (before consensus) to end the situation if
+				the act is ongoing or threatening.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Otherwise, consensus must be reached.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Otherwise, it’s turned over to the DSF board
+				for resolution. &amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Differences are interesting
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;The focus on online interactions and the
+				Django push to try to get more people involved I think are part
+				of the need for really fast reaction times for problems, and
+				then trying to reach consensus.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;The ability to bump the decision up to the
+				DSF is interesting too.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Also the 2/3 vs consensus.&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;For other projects
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;Looking at these two examples, why they are
+				different, and what similarities and needs for inclusion and
+				growth of more developers, online vs events, etc, before
+				deciding how to enforce CoC on your project.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Enforcement and quick enforcement and public
+				statement of what enforcement looks like seems really
+				important. Don’t ignore it. Figure out the process before you
+				have to use it.&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;
+
+				&amp;lt;hr /&amp;gt;
+
+				&amp;lt;p&amp;gt;&amp;lt;strong&amp;gt;Michael #5:&amp;lt;/strong&amp;gt;
+				&amp;lt;a href=&quot;https://twitter.com/gvanrossum/status/1249549091584892928&quot;&amp;gt;&amp;lt;strong&amp;gt;Myths
+				about Indentation&amp;lt;/strong&amp;gt;&amp;lt;/a&amp;gt;&amp;lt;/p&amp;gt;
+
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;Python can come across as a funky language
+				using spacing, not { } for code blocks&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;So let’s talk about some myths&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;#1 Whitespace is
+				significant in Python source code.&amp;lt;/strong&amp;gt;
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;No, &amp;lt;strong&amp;gt;not in general&amp;lt;/strong&amp;gt;.
+				Only the indentation level of your statements is significant
+				(i.e. the whitespace at the very left of your statements).
+				&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Everywhere else, whitespace is not
+				significant and &amp;lt;strong&amp;gt;can be used as you like&amp;lt;/strong&amp;gt;,
+				just like in any other language. &amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;The &amp;lt;strong&amp;gt;exact amount of
+				indentation doesn't matter at all&amp;lt;/strong&amp;gt;, but
+				only the relative indentation of nested blocks (relative to
+				each other). &amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Furthermore, the indentation level is &amp;lt;strong&amp;gt;ignored
+				when you use explicit or implicit continuation lines&amp;lt;/strong&amp;gt;.&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;
+
+				&amp;lt;pre&amp;gt;&amp;lt;code&amp;gt; # For example:
+				&amp;amp;gt;&amp;amp;gt;&amp;amp;gt; foo = [
+				... 'some string',
+				... 'another string',
+				... 'short string'
+				... ]
+				&amp;lt;/code&amp;gt;&amp;lt;/pre&amp;gt;
+
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;#2 Python forces me to
+				use a certain indentation style&amp;lt;/strong&amp;gt;
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Yes and no&amp;lt;/strong&amp;gt;.
+				You can write the inner block all on one line if you like,
+				therefore not having to care about indentation at all. These
+				are equivalent&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;
+
+				&amp;lt;pre&amp;gt;&amp;lt;code&amp;gt; &amp;amp;gt;&amp;amp;gt;&amp;amp;gt;
+				if 1 + 1 == 2:
+				... print(&quot;foo&quot;)
+				... print(&quot;bar&quot;)
+				... x = 42
+
+				&amp;amp;gt;&amp;amp;gt;&amp;amp;gt; if 1 + 1 == 2:
+				... print(&quot;foo&quot;); print(&quot;bar&quot;); x = 42
+
+				&amp;amp;gt;&amp;amp;gt;&amp;amp;gt; if 1 + 1 == 2: print(&quot;foo&quot;);
+				print(&quot;bar&quot;); x = 42
+				&amp;lt;/code&amp;gt;&amp;lt;/pre&amp;gt;
+
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;If you decide to write the &amp;lt;strong&amp;gt;block
+				on separate lines, then yes, Python forces you to obey&amp;lt;/strong&amp;gt;
+				its indentation rules&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;The conclusion is: &amp;lt;strong&amp;gt;Python
+				forces you to use indentation that you would have used anyway&amp;lt;/strong&amp;gt;,
+				unless you wanted to obfuscate the structure of the program.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Seen C code like this:&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;
+
+				&amp;lt;pre&amp;gt;&amp;lt;code&amp;gt;if (some condition)
+				if (another condition)
+				do_something(fancy);
+				else
+				this_sucks(badluck);
+				&amp;lt;/code&amp;gt;&amp;lt;/pre&amp;gt;
+
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;Either &amp;lt;strong&amp;gt;the indentation
+				is wrong, or the program is buggy&amp;lt;/strong&amp;gt;. In
+				Python, this error cannot occur. The program always does what
+				you expect when you look at the indentation.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;#3 You cannot safely
+				mix tabs and spaces in Python&amp;lt;/strong&amp;gt;
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;That's right, and you
+				don't want that.&amp;lt;/strong&amp;gt; &amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Most good editors support transparent
+				translation of tabs, automatic indent and dedent.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;It's behaving like you would expect a tab key
+				to do, but still maintaining portability by using spaces in the
+				file only. This is convenient and safe.&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;#4 I just don't like it&amp;lt;/strong&amp;gt;
+				- &amp;lt;strong&amp;gt;That's perfectly OK&amp;lt;/strong&amp;gt;;
+				you're free to dislike it
+				- But it does have a &amp;lt;strong&amp;gt;lot of advantages,
+				and you get used to it very quickly&amp;lt;/strong&amp;gt; when
+				you seriously start programming in Python. &amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;#5 How does the
+				compiler parse the indentation&amp;lt;/strong&amp;gt;
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;The parsing is well-defined and &amp;lt;strong&amp;gt;quite
+				simple&amp;lt;/strong&amp;gt;. &amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Basically, changes to the &amp;lt;strong&amp;gt;indentation
+				level are inserted as tokens into the token stream&amp;lt;/strong&amp;gt;.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;After the lexical analysis (before parsing
+				starts), &amp;lt;strong&amp;gt;there is&amp;lt;/strong&amp;gt;
+				&amp;lt;strong&amp;gt;&amp;lt;em&amp;gt;no&amp;lt;/em&amp;gt;&amp;lt;/strong&amp;gt;
+				&amp;lt;strong&amp;gt;whitespace left in the list of tokens&amp;lt;/strong&amp;gt;
+				(except possibly within string literals, of course). In other
+				words, the indentation is handled by the lexer, not by the
+				parser.&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;
+
+				&amp;lt;hr /&amp;gt;
+
+				&amp;lt;p&amp;gt;&amp;lt;strong&amp;gt;Guido #6:&amp;lt;/strong&amp;gt;
+				Parsers and LibCST&amp;lt;/p&amp;gt;
+
+				&amp;lt;p&amp;gt;-&amp;lt;a href=&quot;https://github.com/Instagram/LibCST&quot;&amp;gt;
+				https://github.com/Instagram/LibCST &amp;lt;/a&amp;gt;&amp;lt;/p&amp;gt;
+
+				&amp;lt;hr /&amp;gt;
+
+				&amp;lt;p&amp;gt;&amp;lt;strong&amp;gt;Extras:&amp;lt;/strong&amp;gt;&amp;lt;/p&amp;gt;
+
+				&amp;lt;p&amp;gt;Michael:&amp;lt;/p&amp;gt;
+
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Django no longer
+				supports Python 2 AT ALL&amp;lt;/strong&amp;gt; (via Adam
+				(Codependent Codr)). April 1st this year, the 1.11 line of
+				Django has left Long Term Support (LTS). Leaving only 2.2.12+
+				with exclusively Python 3 support.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Quick follow up on “Coding is Googling”. I
+				went through a recent blip of mad googling.&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;
+
+				&amp;lt;p&amp;gt;Brian: &amp;lt;/p&amp;gt;
+
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;Gotta get my talk recorded this week,
+				deadlines Friday. A little worried. As a writer and developer,
+				me and deadlines don’t always see eye to eye.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Follow-ups from previous episodes:
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;Got lots of help with my Mac / Windows
+				problem and modifier keys. Thanks everyone. Simplest solution
+				Apple→System Prefs→Keyboard→Modifier Keys, and swap control and
+				command for my external keyboard. So far, so good.&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;You can’t use the setuptools_scm trick to get
+				github actions to automatically publish to Test PyPI or PyPI
+				for Flit or Poetry projects, since the version number is a
+				simple string in the repo. Would love to hear if anyone has a
+				solution to this one. Otherwise I’m fine with a make or tox
+				snippet for publishing that combines bumping the version. &amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;
+
+				&amp;lt;p&amp;gt;Guido:&amp;lt;/p&amp;gt;
+
+				&amp;lt;ul&amp;gt;
+				&amp;lt;li&amp;gt;PyCon goes &amp;lt;a href=&quot;https://us.pycon.org/2020/online/&quot;&amp;gt;online&amp;lt;/a&amp;gt;.
+				&amp;lt;/li&amp;gt;
+				&amp;lt;li&amp;gt;Python 2.7.8 was &amp;lt;a href=&quot;https://mail.python.org/archives/list/python-dev@python.org/message/OFCIETIXLX34X7FVK5B5WPZH22HXV342/&quot;&amp;gt;released&amp;lt;/a&amp;gt;,
+				the last Python 2 release ever.&amp;lt;/li&amp;gt;
+				&amp;lt;/ul&amp;gt;
+
+				&amp;lt;hr /&amp;gt;
+
+				&amp;lt;p&amp;gt;&amp;lt;strong&amp;gt;Joke:&amp;lt;/strong&amp;gt;&amp;lt;/p&amp;gt;
+
+				&amp;lt;p&amp;gt;Via &amp;lt;a href=&quot;https://twitter.com/derchambers/status/1226760532763410432&quot;&amp;gt;https://twitter.com/derchambers/status/1226760532763410432&amp;lt;/a&amp;gt;&amp;lt;/p&amp;gt;
+
+				&amp;lt;p&amp;gt;How can you borrow more money at the same
+				time? With &amp;lt;strong&amp;gt;asyncIO&amp;lt;/strong&amp;gt;Us!&amp;lt;/p&amp;gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 08:00:00 +0000</pubDate>
+		</item>
+		<item>
+			<title>Stories in My Pocket: Refactoring and asking for
+				forgiveness
+			</title>
+			<guid>
+				https://everydaysuperpowers.dev/articles/refactoring-and-asking-forgiveness/
+			</guid>
+			<link>
+				https://everydaysuperpowers.dev/articles/refactoring-and-asking-forgiveness/
+			</link>
+			<description>&lt;div class=&quot;rich-text&quot;&gt;&lt;p&gt;Recently,
+				I had a great interaction with one of my coworkers that I think
+				is worth sharing, with the hope you may learn a bit about
+				refactoring and python.&lt;/p&gt;&lt;p&gt;My colleague came to
+				me to help him think through a problem that surfaced with a
+				change to a project. The code in question sends a file to a
+				remote storage service. It looked like this:&lt;/p&gt;&lt;/div&gt;&lt;br
+				/&gt;&lt;a href=&quot;https://storiesinmypocket.comhttps://everydaysuperpowers.dev/articles/refactoring-and-asking-forgiveness/&quot;&gt;Read
+				more...&lt;/a&gt;&lt;br /&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 01:46:55 +0000</pubDate>
+		</item>
+		<item>
+			<title>Stories in My Pocket: PyCon 2019: The People of PyCon
+			</title>
+			<guid>
+				https://everydaysuperpowers.dev/articles/pycon-2019-people-pycon/
+			</guid>
+			<link>
+				https://everydaysuperpowers.dev/articles/pycon-2019-people-pycon/
+			</link>
+			<description>&lt;p&gt;There have been a few thoughts about PyCon US
+				2019 that have been bouncing around my head, wanting to come
+				out. Today, I want to talk about the opportunity to meet your
+				Python heros, and why you should start planning on attending
+				next year.&lt;/p&gt;&lt;br /&gt;&lt;a href=&quot;https://storiesinmypocket.comhttps://everydaysuperpowers.dev/articles/pycon-2019-people-pycon/&quot;&gt;Read
+				more...&lt;/a&gt;&lt;br /&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 01:46:55 +0000</pubDate>
+		</item>
+		<item>
+			<title>Stories in My Pocket: PyCon 2019: Open Spaces</title>
+			<guid>
+				https://everydaysuperpowers.dev/articles/pycon-2019-open-spaces/
+			</guid>
+			<link>
+				https://everydaysuperpowers.dev/articles/pycon-2019-open-spaces/
+			</link>
+			<description>&lt;p&gt;There have been a few thoughts about PyCon US
+				2019 that have been bouncing around my head, wanting to come
+				out. Today, I want to talk about PyCon&amp;#x27;s Open Spaces,
+				and why you should start planning on attending next year.&lt;/p&gt;&lt;br
+				/&gt;&lt;a href=&quot;https://storiesinmypocket.comhttps://everydaysuperpowers.dev/articles/pycon-2019-open-spaces/&quot;&gt;Read
+				more...&lt;/a&gt;&lt;br /&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 01:46:55 +0000</pubDate>
+		</item>
+		<item>
+			<title>Stories in My Pocket: Recommended episode: Web Software
+				Architecture Extravaganza
+			</title>
+			<guid>
+				https://everydaysuperpowers.dev/articles/recommended-episode-web-software-architecture-extravaganza/
+			</guid>
+			<link>
+				https://everydaysuperpowers.dev/articles/recommended-episode-web-software-architecture-extravaganza/
+			</link>
+			<description>&lt;div class=&quot;rich-text&quot;&gt;&lt;p&gt;I
+				recently started listening to the &lt;a href=&quot;https://friday.hirelofty.com/&quot;&gt;Friday
+				Afternoon Deploy&lt;/a&gt; podcast and have been enjoying it.&lt;/p&gt;&lt;p&gt;It&amp;#x27;s
+				a weekly podcast where some of the developers at &lt;a href=&quot;https://hirelofty.com/&quot;&gt;Lofty
+				Labs&lt;/a&gt; let off steam on a Friday afternoon by recording
+				a conversation about whatever comes up. They tend to focus on
+				python web development, JavaScript, related topics, as well as
+				random topics from food, pop culture, and some Fayetteville,
+				Arkansas happenings.&lt;/p&gt;&lt;p&gt;It&amp;#x27;s about what
+				you&amp;#x27;d expect from a bunch of web developers sitting
+				around and chatting, full of strong opinions and geeky jokes.&lt;/p&gt;&lt;p&gt;In
+				particular, I wanted to share with you the most recent episode,
+				&lt;a href=&quot;https://friday.hirelofty.com/podcast/episode/fad_ep42_tc-web-software-architecture-extravaganza/&quot;&gt;Web
+				Software Architecture Extravaganza&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;It
+				covers more web development ground than the normal episode and
+				covers good usages for different technologies, including:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Kubernetes&lt;/li&gt;&lt;li&gt;microservices&lt;/li&gt;&lt;li&gt;monolith
+				web applications&lt;/li&gt;&lt;li&gt;Progressive web apps&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;For
+				those who&amp;#x27;d like to know, very occasional adult
+				language is used, roughly at a PG to PG-13 variety.&lt;/p&gt;&lt;/div&gt;&lt;br
+				/&gt;&lt;a href=&quot;https://storiesinmypocket.comhttps://everydaysuperpowers.dev/articles/recommended-episode-web-software-architecture-extravaganza/&quot;&gt;Read
+				more...&lt;/a&gt;&lt;br /&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 01:46:55 +0000</pubDate>
+		</item>
+		<item>
+			<title>Stories in My Pocket: Recommended podcast episode: No Plans
+				to Merge &quot;Feature Branches&quot;
+			</title>
+			<guid>
+				https://everydaysuperpowers.dev/articles/recommended-episode-no-plans-merge-feature-branches/
+			</guid>
+			<link>
+				https://everydaysuperpowers.dev/articles/recommended-episode-no-plans-merge-feature-branches/
+			</link>
+			<description>&lt;p&gt;&lt;a href=&quot;http://www.noplanstomerge.com/&quot;&gt;No
+				Plans to Merge&lt;/a&gt; is a newer podcast to me. The hosts,
+				Daniel Coulbourne &amp;amp; Caleb Porzio, have a chemistry that
+				is much deeper than their episode count would suggest, as this
+				podcast is the successor to another show that ended a few
+				months ago.&lt;/p&gt;&lt;p&gt;The latest episode, &amp;quot;&lt;a
+				href=&quot;http://www.noplanstomerge.com/feature-branch-proof&quot;&gt;Your
+				Feature Branches Are Too Long And We Can Prove It!&lt;/a&gt;&amp;quot;,
+				is one of those episodes that I will be thinking about for some
+				time to come. They spend most of the episode discussing the
+				development workflow of creating feature branches, and how to
+				lessen the pain of merging them.&lt;/p&gt;&lt;p&gt;At times,
+				this conversation is slow, messy, frustrating, annoying, and is
+				&lt;b&gt;completely worth it&lt;/b&gt;!&lt;/p&gt;&lt;br /&gt;&lt;a
+				href=&quot;https://storiesinmypocket.comhttps://everydaysuperpowers.dev/articles/recommended-episode-no-plans-merge-feature-branches/&quot;&gt;Read
+				more...&lt;/a&gt;&lt;br /&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 01:46:55 +0000</pubDate>
+		</item>
+		<item>
+			<title>Stories in My Pocket: Don't be afraid of Test-Driven
+				Development
+			</title>
+			<guid>
+				https://everydaysuperpowers.dev/articles/dont-be-afraid-test-driven-development/
+			</guid>
+			<link>
+				https://everydaysuperpowers.dev/articles/dont-be-afraid-test-driven-development/
+			</link>
+			<description>&lt;p&gt;Throughout my career, the teams I’ve been on
+				have had a wide range of views on using tests while developing
+				code. As I’ve moved between teams, listened to podcasts, and
+				read articles, I’ve assembled some notes that would have been
+				very useful for me in the past. Some of these notes are getting
+				compiled into a book, but some of them are too important to
+				wait. I want to convince you to try testing your code.&lt;/p&gt;&lt;br
+				/&gt;&lt;a href=&quot;https://storiesinmypocket.comhttps://everydaysuperpowers.dev/articles/dont-be-afraid-test-driven-development/&quot;&gt;Read
+				more...&lt;/a&gt;&lt;br /&gt;
+			</description>
+			<pubDate>Thu, 30 Apr 2020 01:46:55 +0000</pubDate>
+		</item>
+
+	</channel>
+</rss>
